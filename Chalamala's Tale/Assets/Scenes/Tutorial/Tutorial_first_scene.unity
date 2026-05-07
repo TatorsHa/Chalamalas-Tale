@@ -689,6 +689,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f27061abe884cf49810a8601b66f3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoNotDestroy
+  destroyInScene: Room
+  uiToDestroy: {fileID: 899786282}
 --- !u!1 &496087835
 GameObject:
   m_ObjectHideFlags: 0
@@ -1112,7 +1114,7 @@ GameObject:
   - component: {fileID: 899786285}
   - component: {fileID: 899786284}
   m_Layer: 5
-  m_Name: Minimap
+  m_Name: Minimap_tuto
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1738,6 +1740,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f27061abe884cf49810a8601b66f3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoNotDestroy
+  destroyInScene: 
+  uiToDestroy: {fileID: 0}
 --- !u!114 &1506803658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1750,6 +1754,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f27061abe884cf49810a8601b66f3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoNotDestroy
+  destroyInScene: 
+  uiToDestroy: {fileID: 0}
 --- !u!1 &1522352476
 GameObject:
   m_ObjectHideFlags: 0
@@ -2470,6 +2476,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f27061abe884cf49810a8601b66f3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoNotDestroy
+  destroyInScene: 
+  uiToDestroy: {fileID: 0}
 --- !u!1 &1826249608
 GameObject:
   m_ObjectHideFlags: 0
