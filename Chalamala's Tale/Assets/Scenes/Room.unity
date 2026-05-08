@@ -2028,6 +2028,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f27061abe884cf49810a8601b66f3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoNotDestroy
+  destroyInScene: 
+  uiToDestroy: {fileID: 0}
+  gridManagerTodestroy: {fileID: 0}
 --- !u!1 &922939147
 GameObject:
   m_ObjectHideFlags: 0

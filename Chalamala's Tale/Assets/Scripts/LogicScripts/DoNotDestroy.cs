@@ -10,6 +10,7 @@ public class DoNotDestroy : MonoBehaviour
     [Header("Destroy Settings")]
     public string destroyInScene; // Scene name
     public GameObject uiToDestroy; // UI object to destroy
+    public GameObject gridManagerTodestroy; //to avoid issues destroies the tuto gridmanager when in the main game
 
     void Awake()
     {
@@ -38,6 +39,10 @@ public class DoNotDestroy : MonoBehaviour
             if (uiToDestroy != null)
             {
                 Destroy(uiToDestroy);
+            }
+            else if (gridManagerTodestroy != null)
+            {
+                Destroy(gridManagerTodestroy);
             }
         }
     }

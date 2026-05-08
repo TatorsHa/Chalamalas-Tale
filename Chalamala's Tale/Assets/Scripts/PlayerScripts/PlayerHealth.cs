@@ -67,14 +67,34 @@ public class PlayerHealth : MonoBehaviour
             // to not mess up with room positions, we assign it automatically
             GridManager.Instance.currentRow = 3;
             GridManager.Instance.currentCol = 3;
+            
+            SceneManager.sceneLoaded += RedrawMinimapAfterRespawn;
+            GridManager.Instance.GenerateGrid();
+
             SceneManager.LoadScene("Room");
             
             
         }
 
-        deathCounter += 1;
+    deathCounter += 1;
 
     }
+
+    private void RedrawMinimapAfterRespawn(Scene scene, LoadSceneMode mode)
+    {
+        Minimap minimap = FindFirstObjectByType<Minimap>();
+
+        Debug.Log("Minimap found? " + (minimap != null));
+
+        if(minimap != null)
+        {
+            minimap.Draw();
+        }
+
+        SceneManager.sceneLoaded -= RedrawMinimapAfterRespawn;
+    }
+
+
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
