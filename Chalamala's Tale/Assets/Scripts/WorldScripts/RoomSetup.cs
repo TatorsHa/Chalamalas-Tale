@@ -4,9 +4,13 @@ public class RoomSetup : MonoBehaviour
 {
     void Start()
     {
-        int r = GridManager.Instance.currentRow;
-        int c = GridManager.Instance.currentCol;
-        Debug.Log($"Loading room [{r},{c}]");
+        int roomRow = GridManager.Instance.currentRow;
+        int roomCol = GridManager.Instance.currentCol;
+        Debug.Log($"Loading room [{roomRow},{roomCol}]");
+
+        // Check if the room has already been cleared by the player.
+        // Only load enemies and collectibles if room hasn't been cleared yet
+        CheckIfCleared(roomRow, roomCol);
 
         // Reposition player based on which side they entered from (Access the hitbox object, not the empty player parent)
         var player = PlayerHealth.Instance.transform;
@@ -19,11 +23,26 @@ public class RoomSetup : MonoBehaviour
         }
         //Debug.Log($"Player spawned at: {player.transform.position}");
 
-        GameObject.Find("DoorTop").SetActive(   GridManager.Instance.IsOpen(r, c, 0));
-        GameObject.Find("DoorRight").SetActive( GridManager.Instance.IsOpen(r, c, 1));
-        GameObject.Find("DoorBottom").SetActive(GridManager.Instance.IsOpen(r, c, 2));
-        GameObject.Find("DoorLeft").SetActive(  GridManager.Instance.IsOpen(r, c, 3));
+        GameObject.Find("DoorTop").SetActive(   GridManager.Instance.IsOpen(roomRow, roomCol, 0));
+        GameObject.Find("DoorRight").SetActive( GridManager.Instance.IsOpen(roomRow, roomCol, 1));
+        GameObject.Find("DoorBottom").SetActive(GridManager.Instance.IsOpen(roomRow, roomCol, 2));
+        GameObject.Find("DoorLeft").SetActive(  GridManager.Instance.IsOpen(roomRow, roomCol, 3));
 
         FindFirstObjectByType<Minimap>()?.Draw(); // redraw minimap with current room highlighted
+    }
+
+    private void CheckIfCleared(int roomRow, int roomCol)
+    {
+        // Only load enemies and collectibles if room hasn't been cleared yet
+        if(GridManager.Instance.clearedRooms[roomRow, roomCol])
+        {
+            // Dont load the enemies
+            GameObject roomEnemies = GameObject.Find("Enemies");
+            roomEnemies?.SetActive(false);
+
+            // Dont load collected upgrades
+            GameObject rangedAttackUpgrade = GameObject.Find("RangedAttackUpgrade");
+            rangedAttackUpgrade?.SetActive(false);
+        }
     }
 }
