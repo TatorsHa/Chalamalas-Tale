@@ -8,6 +8,11 @@ public class GridManager : MonoBehaviour
     // Keep track of which rooms have been visited, and should be part of the minimap
     public HashSet<(int, int)> visitedRooms = new HashSet<(int, int)>();
 
+    // Keep track of what rooms have been cleared, and should not have spawning enemies
+    // This has to be tracked seperately from visited rooms, since you can visit a room without clearing it by dying.
+    // Initialized to false by default
+    public bool[,] clearedRooms = new bool[4, 4];
+
     // Keep track of the types of the rooms (enemy, npc, boss, startc, etc.)
     public RoomTypes[,] roomTypes = new RoomTypes[4, 4];
 
@@ -59,6 +64,10 @@ public class GridManager : MonoBehaviour
     // Updates current room position and loads the new room that the player moved to
     public void MoveToRoom(int side)
     {
+        // Mark the previous room as cleared
+        // I hope this doesnt introduce a bug where dying will move player to start, and mark the death room as cleared
+        clearedRooms[currentRow, currentCol] = true;
+
         enteredFromSide = side;
         if (side == 0) currentRow--;
         if (side == 1) currentCol++;
@@ -100,8 +109,8 @@ public class GridManager : MonoBehaviour
                 SceneManager.LoadScene("Room");
                 break;
         }
-        Debug.Log("Test" + roomTypes[currentRow, currentCol]);
 
+        Debug.Log("Test" + roomTypes[currentRow, currentCol]);
     }
 
     // Generates the map grid using a recursive dfs approach

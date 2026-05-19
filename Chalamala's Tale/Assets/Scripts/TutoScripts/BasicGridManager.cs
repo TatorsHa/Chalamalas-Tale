@@ -81,7 +81,7 @@ public class BasicGridManager : MonoBehaviour
         switch (roomTypeToLoad)
         {
             case TutoRoomTypes.Tutorial_Dragon_Room:
-                SceneManager.LoadScene("dragon_killing_you");
+                SceneManager.LoadScene("DragonGif");
                 break;
             
             case TutoRoomTypes.Simple_Enemy_Room:
