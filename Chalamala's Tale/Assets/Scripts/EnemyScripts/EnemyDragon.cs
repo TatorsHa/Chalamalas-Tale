@@ -7,12 +7,14 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /*
-class for the dragon boss enemy:
-- set up: put maximal health
+Dragon Boss:
 - boss fight divided in 3 phases (the change of phase is induced by the current health of the dragon)
 - attacks:
-    - flames (different patterns generated throughout the battle)
-    - Phase 1 hazard (now: ground flame sprouts instead of falling rocks)
+    - Phase 1: Roar that knocks the player back, and random flame sprouts on the ground that 
+    damage the player if they stay in the area for too long
+    - Phase 2: Spawns a boulder that the player can hide behind, and shoots projectiles in an arc that the player has to 
+    dodge while hiding behind the boulder. The boulder changes position after each barrage.
+    - Phase 3: Wicked spiral flame attack, todo
 */
 
 [RequireComponent(typeof(Collider2D))]
