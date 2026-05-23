@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 672155085305880507}
   - component: {fileID: 2542549076725558783}
   - component: {fileID: 6338989439524615427}
+  - component: {fileID: 8916376703912818437}
   m_Layer: 0
   m_Name: EnemyKnight
   m_TagString: Enemy
@@ -179,3 +180,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a3d9c5672c7b4b47bfdcc13e4329aec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CollisionDamage
+--- !u!114 &8916376703912818437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4007544879303788332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e869e26441c5c646844ffe1dd393980, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyKnight
+  maxHealth: 5
+  playerObjectName: Player
+  aggroRangeRadius: 6
+  attackRangeRadius: 1.8
+  moveSpeed: 1.5
+  stopWhileAttacking: 1
+  blockDurationSeconds: 2
+  blockCooldownSeconds: 4
+  blockSprite: {fileID: 0}
+  animator: {fileID: 0}
+  attackCooldownSeconds: 1.75
+  attackWindupSeconds: 0.15
+  sweepRange: 2
+  sweepAngleDegrees: 180
+  sweepDamage: 1
+  playerLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  attackOrigin: {fileID: 0}
+  attackSprite: {fileID: 0}
+  attackColor: {r: 1, g: 0.85, b: 0.85, a: 1}
+  spriteRenderer: {fileID: 0}
+  faceUsingFlipX: 1
+  spriteFacesRightByDefault: 1

@@ -189,6 +189,7 @@ public class EnemyKnight : MonoBehaviour, IDamageable
         currentHealth -= damageAmount;
         if (currentHealth <= 0f)
         {
+            GetComponent<DropTable>()?.SpawnDrops();
             Destroy(gameObject);
         }
     }

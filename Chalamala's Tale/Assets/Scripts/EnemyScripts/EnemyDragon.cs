@@ -733,6 +733,7 @@ public class EnemyDragon : MonoBehaviour, IDamageable
 
     private void Die()
     {
+        GetComponent<DropTable>()?.SpawnDrops();
         Destroy(gameObject);
         if (healthBar != null)
         {

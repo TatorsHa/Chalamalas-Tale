@@ -31,6 +31,11 @@ public class PlayerArrowProjectile : MonoBehaviour
         spawnTime = Time.time;
     }
 
+    public void SetDamage(int damage)
+    {
+        damageAmount = Mathf.Max(0, damage);
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag(enemyTag))
