@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 3008353668745691461}
   - component: {fileID: 5968777599721593099}
   - component: {fileID: 672155085305880507}
-  - component: {fileID: 2542549076725558783}
-  - component: {fileID: -2099138826295156100}
+  - component: {fileID: -4105682282112891271}
+  - component: {fileID: 1662580092874906340}
   m_Layer: 0
-  m_Name: FallingRock
+  m_Name: DragonArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,9 +82,9 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: 4adeaf2d2b1c7417e89f026626d8264f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 24cf210708c57674b894af3341b1738b, type: 3}
   m_Color: {r: 0.09019609, g: 0.6203269, b: 0.7411765, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -121,8 +121,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!61 &2542549076725558783
-BoxCollider2D:
+--- !u!58 &-4105682282112891271
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -156,18 +156,8 @@ BoxCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
---- !u!114 &-2099138826295156100
+  m_Radius: 0.16
+--- !u!114 &1662580092874906340
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -176,14 +166,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 4007544879303788332}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b29d97ad608d87f48b50b34c6c01cd5a, type: 3}
+  m_Script: {fileID: 11500000, guid: 4a29f94f583ef4f4c818b844d76d7ab0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FallingRock
-  warningDelaySeconds: 2
-  fallSpeed: 10
-  damageRadius: 1.5
-  damageAmount: 1
-  playerLayerMask:
-    serializedVersion: 2
-    m_Bits: 0
-  destroyAfterSeconds: 6
+  m_EditorClassIdentifier: Assembly-CSharp::DragonProjectile

@@ -11,11 +11,10 @@ GameObject:
   - component: {fileID: 3008353668745691461}
   - component: {fileID: 5968777599721593099}
   - component: {fileID: 672155085305880507}
-  - component: {fileID: 6724042598694419774}
   - component: {fileID: 2542549076725558783}
   - component: {fileID: 6338989439524615427}
   m_Layer: 0
-  m_Name: EnemyChasing
+  m_Name: EnemyKnight
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85,12 +84,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -7870200531635767695, guid: 10d0958c371771743847d24d795a9bd7, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Color: {r: 0.045523323, g: 0.8773585, b: 0.8049794, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.03, y: 1.91}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -122,23 +121,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &6724042598694419774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4007544879303788332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88e175d39b4bf9345abaf692a9d504cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyChasing
-  maxHealth: 10
-  aggroRangeRadius: 5
-  showAggroRange: 1
-  speed: 2.5
-  spriteImage: {fileID: 0}
 --- !u!61 &2542549076725558783
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -177,8 +159,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.2, y: 1.13}
-    newSize: {x: 2.03, y: 1.91}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
