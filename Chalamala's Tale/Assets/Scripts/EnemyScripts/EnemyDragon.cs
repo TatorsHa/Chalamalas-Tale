@@ -15,6 +15,8 @@ Dragon Boss:
     - Phase 2: Spawns a boulder that the player can hide behind, and shoots projectiles in an arc that the player has to 
     dodge while hiding behind the boulder. The boulder changes position after each barrage.
     - Phase 3: Wicked spiral flame attack, todo
+
+    todo: sprites, animations, boss health, victory screen
 */
 
 [RequireComponent(typeof(Collider2D))]
