@@ -681,6 +681,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 191706189}
   m_CullTransparentMesh: 1
+--- !u!114 &339861364 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4706370975101068616, guid: 6d78e61ff4b381b499c8800ed22b515a, type: 3}
+  m_PrefabInstance: {fileID: 1721216302}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75bf8ebcd7b066d48aa7cdb6d9e08e27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!1 &355619011
 GameObject:
   m_ObjectHideFlags: 0
@@ -4442,7 +4453,7 @@ PrefabInstance:
     - target: {fileID: 4241963996546195205, guid: 9f279eb3b904a4e1fab29ebad41cfac2, type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 339861364}
     - target: {fileID: 4241963996546195205, guid: 9f279eb3b904a4e1fab29ebad41cfac2, type: 3}
       propertyPath: pauseMenu
       value: 
@@ -5671,6 +5682,7 @@ GameObject:
   - component: {fileID: 2125525859}
   - component: {fileID: 2125525858}
   - component: {fileID: 2125525857}
+  - component: {fileID: 2125525860}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -5728,6 +5740,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2125525860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125525856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f27061abe884cf49810a8601b66f3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DoNotDestroy
+  destroyInScene: 
+  uiToDestroy: {fileID: 0}
+  gridManagerTodestroy: {fileID: 0}
 --- !u!1001 &1388136625680383623
 PrefabInstance:
   m_ObjectHideFlags: 0
