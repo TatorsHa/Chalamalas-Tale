@@ -1,27 +1,31 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using System.Collections;  // for different coroutines
-using UnityEngine.UI; // for healthbar
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 /*
-class for the dragon boss ennemy:
-- set up: put maximal health
-- take damage: only when there are no flames around the dragon
+Dragon Boss:
 - boss fight divided in 3 phases (the change of phase is induced by the current health of the dragon)
-- attack: ATM the dragon doesn't attack directly but using two prefabs:
-    - flames (different patterns generated throught the battle)
-    - falling rocks
+- attacks:
+    - Phase 1: Roar that knocks the player back, and random flame sprouts on the ground that 
+    damage the player if they stay in the area for too long
+    - Phase 2: Spawns a boulder that the player can hide behind, and shoots projectiles in an arc that the player has to 
+    dodge while hiding behind the boulder. The boulder changes position after each barrage.
+    - Phase 3: Wicked spiral flame attack, todo
+
+    todo: sprites, animations, boss health, victory screen
 */
 
 [RequireComponent(typeof(Collider2D))]
 public class EnemyDragon : MonoBehaviour, IDamageable
 {
-
     public Sprite roaring;
     private SpriteRenderer spriteRenderer;
     private Sprite defaultSprite;
+
     public enum DragonPhase
     {
         Phase1 = 1,
@@ -32,11 +36,6 @@ public class EnemyDragon : MonoBehaviour, IDamageable
     [Serializable]
     public class DragonPhaseChangedEvent : UnityEvent<DragonPhase> { }
 
-    /*
-    healt:
-    maximal health of 100 hp set at the beginning,
-    shown in the UI slider health bar
-    */
     [Header("Boss Health")]
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] private float currentHealth;
@@ -45,13 +44,11 @@ public class EnemyDragon : MonoBehaviour, IDamageable
     [SerializeField] private Slider healthBar;
 
     /*
-    flames spawned later in the battle and relative variables
+    Flames spawned later in the battle and relative variables
     */
-    public GameObject flamePrefab; 
+    public GameObject flamePrefab;
 
-
-
-     // values for different patterns
+    // values for different patterns
     public Transform centerPoint;
     public float initialRadius = 0.5f;
     public float radiusStep = 0.1f;
@@ -64,7 +61,6 @@ public class EnemyDragon : MonoBehaviour, IDamageable
     public float flameCooldown = 4f;
     private float spiralTimer = 0f;
     public float spiralCooldown = 10f;
-
 
     [Header("Phases")]
     [Tooltip("Switch to Phase 2 when health <= maxHealth * this value")]
@@ -84,23 +80,72 @@ public class EnemyDragon : MonoBehaviour, IDamageable
     [SerializeField] private float roarKnockbackDistance = 4f;
     [SerializeField] private float roarKnockbackDurationSeconds = 0.25f;
 
-    [Header("Phase 1: Falling Rocks")]
-    [Tooltip("Optional prefab to spawn. If omitted, a simple invisible 2D physics rock is created at runtime.")]
-    [SerializeField] private GameObject fallingRockPrefab;
-    [Tooltip("Optional: define the arena bounds for rock spawn positions. Rocks spawn at the TOP (ceiling) of this box.")]
-    [SerializeField] private BoxCollider2D rockSpawnArea;
-    [Tooltip("Used if Rock Spawn Area is not set.")]
-    [SerializeField] private Vector2 fallbackSpawnAreaSize = new Vector2(16f, 10f);
-    [SerializeField] private float rockSpawnIntervalSeconds = 1.25f;
-    [SerializeField] private float rockWarningDelaySeconds = 2f;
-    [SerializeField] private float rockFallSpeed = 10f;
-    [SerializeField] private float rockDamageRadius = 1.5f;
-    [SerializeField] private float rockDamageAmount = 1f;
+    [Header("Phase 1: Ground Flame Sprouts")]
+    [Tooltip("Prefab to spawn for the flame sprout hazard. If omitted, 'flamePrefab' is used.")]
+    [FormerlySerializedAs("fallingRockPrefab")]
+    [SerializeField] private GameObject flameSproutPrefab;
+
+    [Tooltip("World-space bounds of the arena. Flames spawn randomly inside this rectangle.")]
+    [SerializeField] private Vector2 flameAreaMin = new Vector2(-8f, -5f);
+    [SerializeField] private Vector2 flameAreaMax = new Vector2(8f, 5f);
+
+    [FormerlySerializedAs("rockSpawnIntervalSeconds")]
+    [SerializeField] private float flameWaveIntervalSeconds = 1.25f;
+
+    [FormerlySerializedAs("rockWarningDelaySeconds")]
+    [SerializeField] private float flameWarningDelaySeconds = 2f;
+
+    [Tooltip("How many flames to spawn per wave. One is always targeted at the player; the rest are random.")]
+    [SerializeField] private int flameCountPerWave = 5;
+
+    [FormerlySerializedAs("rockDamageRadius")]
+    [SerializeField] private float flameDamageRadius = 0.6f;
+
+    [FormerlySerializedAs("rockDamageAmount")]
+    [SerializeField] private float flameDamageAmount = 1f;
+
+    [SerializeField] private float flameLifetimeSeconds = 2.5f;
+
     [SerializeField] private LayerMask playerLayerMask;
-    [SerializeField] private int maxActiveRocks = 12;
+
+    [FormerlySerializedAs("maxActiveRocks")]
+    [SerializeField] private int maxActiveFlames = 12;
+
+    [Header("Phase 2: Boulder")]
+    [Tooltip("Prefab with a solid Collider2D. The player hides behind this.")]
+    [SerializeField] private GameObject boulderPrefab;
+    [Tooltip("Optional transform used as center of the boulder spawn area.")]
+    [SerializeField] private Transform boulderSpawnAreaCenter;
+    [Tooltip("Fallback center if Boulder Spawn Area Center is not assigned.")]
+    [SerializeField] private Vector2 boulderSpawnPosition = Vector2.zero;
+    [Tooltip("Size of the random boulder spawn rectangle (no collider needed).")]
+    [SerializeField] private Vector2 boulderSpawnAreaSize = new Vector2(10f, 6f);
+    [Tooltip("Extra inward padding from spawn area edges.")]
+    [SerializeField] private float boulderSpawnEdgePadding = 0.25f;
+    [SerializeField] private float boulderWarningDelaySeconds = 2f;
+
+    [Header("Phase 2: Projectile Barrage")]
+    [Tooltip("Prefab with a Rigidbody2D + CircleCollider2D. If omitted, a simple circle is created.")]
+    [SerializeField] private GameObject projectilePrefab;
+    [Tooltip("How long each barrage lasts.")]
+    [SerializeField] private float barrageDurationSeconds = 5f;
+    [Tooltip("Cooldown between barrages.")]
+    [SerializeField] private float barrageCooldownSeconds = 10f;
+    [SerializeField] private float projectilesPerSecond = 15f;
+    [SerializeField] private float projectileSpeed = 8f;
+    [SerializeField] private float projectileDamage = 1f;
+    [SerializeField] private float projectileLifetime = 6f;
+    [Tooltip("How far from the dragon center projectiles are spawned, along their travel direction.")]
+    [SerializeField] private float projectileSpawnOffset = 0.6f;
+    [Tooltip("Arc start angle in degrees. Unity convention: 0=right 90=up 180=left 270=down.")]
+    [SerializeField] private float barrageMinAngle = 180f;
+    [Tooltip("Arc end angle in degrees.")]
+    [SerializeField] private float barrageMaxAngle = 360f;
 
     [Header("Debug")]
     [SerializeField] private bool logPhase1Actions = false;
+    [Tooltip("Override the starting phase when pressing Play. Useful for testing.")]
+    [SerializeField] private DragonPhase debugStartingPhase = DragonPhase.Phase1;
 
     private DragonPhase currentPhase = DragonPhase.Phase1;
     private Rigidbody2D body;
@@ -109,8 +154,14 @@ public class EnemyDragon : MonoBehaviour, IDamageable
     private Transform playerTransform;
 
     private float nextRoarTime;
-    private float nextRockSpawnTime;
-    private readonly List<FallingRock> activeRocks = new List<FallingRock>();
+    private float nextFlameWaveTime;
+    private readonly List<FlameSproutHazard> activeFlames = new List<FlameSproutHazard>();
+
+    // Phase 2 state
+    private bool phase2Initialized = false;
+    private bool barrageRunning = false;
+    private float nextBarrageTime = 0f;
+    private GameObject spawnedBoulder;
 
     public float MaxHealth => maxHealth;
     public float CurrentHealth => currentHealth;
@@ -120,7 +171,6 @@ public class EnemyDragon : MonoBehaviour, IDamageable
 
     private void Awake()
     {
-        // assign normal sprite
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         if (spriteRenderer != null)
         {
@@ -133,8 +183,30 @@ public class EnemyDragon : MonoBehaviour, IDamageable
         }
 
         currentHealth = maxHealth;
-        healthBar.value = 1f;   // as the UI values are [0,1], we work with fractions of health to be shown
-        currentPhase = DragonPhase.Phase1;
+        if (healthBar != null)
+        {
+            healthBar.value = 1f;
+        }
+
+        currentPhase = debugStartingPhase;
+
+        // Force health into the correct range for the chosen starting phase
+        if (debugStartingPhase == DragonPhase.Phase3)
+        {
+            currentHealth = maxHealth * Mathf.Clamp01(phase3HealthPercent) * 0.5f;
+        }
+        else if (debugStartingPhase == DragonPhase.Phase2)
+        {
+            currentHealth = maxHealth * Mathf.Lerp(
+                Mathf.Clamp01(phase3HealthPercent),
+                Mathf.Clamp01(phase2HealthPercent),
+                0.5f);
+        }
+
+        if (healthBar != null)
+        {
+            healthBar.value = currentHealth / maxHealth;
+        }
 
         body = GetComponent<Rigidbody2D>();
         if (makeImmovable && body != null)
@@ -149,15 +221,12 @@ public class EnemyDragon : MonoBehaviour, IDamageable
 
         CachePlayerRefs();
         nextRoarTime = Time.time + Mathf.Max(0.01f, roarIntervalSeconds);
-        nextRockSpawnTime = Time.time + Mathf.Max(0.01f, rockSpawnIntervalSeconds);
+        nextFlameWaveTime = Time.time + Mathf.Max(0.01f, flameWaveIntervalSeconds);
     }
 
     private void Update()
     {
-        /*
-        timer handling flames coreographies
-        */
-
+        // timer handling flames coreographies
         flameTimer += Time.deltaTime;
         spiralTimer += Time.deltaTime;
 
@@ -166,18 +235,20 @@ public class EnemyDragon : MonoBehaviour, IDamageable
             SpawnCloseFlames();
             flameTimer = 0f;
         }
+
         if (spiralTimer >= spiralCooldown)
         {
             StartCoroutine(SpawnSpiral());
             spiralTimer = 0f;
-            
         }
 
-
-        // handler of phase 1
         if (currentPhase == DragonPhase.Phase1)
         {
             HandlePhase1();
+        }
+        else if (currentPhase == DragonPhase.Phase2)
+        {
+            HandlePhase2();
         }
     }
 
@@ -200,24 +271,209 @@ public class EnemyDragon : MonoBehaviour, IDamageable
             nextRoarTime = Time.time + Mathf.Max(0.01f, roarIntervalSeconds);
         }
 
-        if (Time.time >= nextRockSpawnTime)
+        if (Time.time >= nextFlameWaveTime)
         {
-            SpawnFallingRock();
-            nextRockSpawnTime = Time.time + Mathf.Max(0.01f, rockSpawnIntervalSeconds);
+            SpawnFlameSproutWave();
+            nextFlameWaveTime = Time.time + Mathf.Max(0.01f, flameWaveIntervalSeconds);
         }
+    }
+
+    private void HandlePhase2()
+    {
+        if (!phase2Initialized)
+        {
+            phase2Initialized = true;
+            StartCoroutine(SpawnBoulderWithWarning());
+            // Give the boulder time to appear before the first barrage
+            nextBarrageTime = Time.time + boulderWarningDelaySeconds + 1f;
+        }
+
+        if (!barrageRunning && Time.time >= nextBarrageTime)
+        {
+            StartCoroutine(BarrageCoroutine());
+        }
+    }
+
+    private IEnumerator SpawnBoulderWithWarning()
+    {
+        if (boulderPrefab == null)
+        {
+            Debug.LogWarning($"{name}: No boulderPrefab assigned for Phase 2.", this);
+            yield break;
+        }
+
+        if (spawnedBoulder != null)
+        {
+            Destroy(spawnedBoulder);
+            spawnedBoulder = null;
+        }
+
+        Vector3 spawnPos = GetRandomBoulderSpawnPosition();
+        spawnedBoulder = Instantiate(boulderPrefab, spawnPos, Quaternion.identity);
+
+        var boulder = spawnedBoulder.GetComponent<PhaseBoulder>();
+        if (boulder == null)
+        {
+            boulder = spawnedBoulder.AddComponent<PhaseBoulder>();
+        }
+
+        boulder.Initialize(boulderWarningDelaySeconds);
+        yield break;
+    }
+
+    private IEnumerator BarrageCoroutine()
+    {
+        barrageRunning = true;
+
+        float interval = 1f / Mathf.Max(0.1f, projectilesPerSecond);
+        float endTime = Time.time + Mathf.Max(0.01f, barrageDurationSeconds);
+        float nextShotTime = Time.time;
+
+        while (Time.time < endTime)
+        {
+            // Catch up if this frame is late, so we preserve configured shots/sec.
+            while (Time.time >= nextShotTime)
+            {
+                float angle = UnityEngine.Random.Range(barrageMinAngle, barrageMaxAngle);
+                float rad = angle * Mathf.Deg2Rad;
+                Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+                FireProjectile(dir);
+                nextShotTime += interval;
+            }
+
+            yield return null;
+        }
+
+        if (spawnedBoulder != null)
+        {
+            Destroy(spawnedBoulder);
+            spawnedBoulder = null;
+        }
+
+        // Spawn the next cover boulder at a new random location while cooldown runs.
+        StartCoroutine(SpawnBoulderWithWarning());
+
+        barrageRunning = false;
+        nextBarrageTime = Time.time + barrageCooldownSeconds;
+    }
+
+    private Vector3 GetRandomBoulderSpawnPosition()
+    {
+        Vector2 center;
+        Vector2 size;
+        GetBoulderSpawnAreaRect(out center, out size);
+
+        float halfX = size.x * 0.5f;
+        float halfY = size.y * 0.5f;
+
+        Vector2 boulderHalfExtents = GetBoulderHalfExtentsApprox();
+        float pad = Mathf.Max(0f, boulderSpawnEdgePadding);
+
+        float minX = center.x - halfX + boulderHalfExtents.x + pad;
+        float maxX = center.x + halfX - boulderHalfExtents.x - pad;
+        float minY = center.y - halfY + boulderHalfExtents.y + pad;
+        float maxY = center.y + halfY - boulderHalfExtents.y - pad;
+
+        // If area is too small after clamping, fall back to center on that axis.
+        float xPos = minX <= maxX ? UnityEngine.Random.Range(minX, maxX) : center.x;
+        float yPos = minY <= maxY ? UnityEngine.Random.Range(minY, maxY) : center.y;
+        return new Vector3(xPos, yPos, 0f);
+    }
+
+    private void GetBoulderSpawnAreaRect(out Vector2 center, out Vector2 size)
+    {
+        center = boulderSpawnPosition;
+        size = new Vector2(
+            Mathf.Max(0.1f, boulderSpawnAreaSize.x),
+            Mathf.Max(0.1f, boulderSpawnAreaSize.y));
+
+        if (boulderSpawnAreaCenter == null)
+        {
+            return;
+        }
+
+        center = boulderSpawnAreaCenter.position;
+
+        Renderer areaRenderer = boulderSpawnAreaCenter.GetComponent<Renderer>();
+        if (areaRenderer == null)
+        {
+            areaRenderer = boulderSpawnAreaCenter.GetComponentInChildren<Renderer>();
+        }
+
+        if (areaRenderer != null)
+        {
+            Bounds b = areaRenderer.bounds;
+            center = b.center;
+            size = new Vector2(Mathf.Max(0.1f, b.size.x), Mathf.Max(0.1f, b.size.y));
+        }
+    }
+
+    private Vector2 GetBoulderHalfExtentsApprox()
+    {
+        if (boulderPrefab == null)
+        {
+            return Vector2.zero;
+        }
+
+        SpriteRenderer prefabSr = boulderPrefab.GetComponentInChildren<SpriteRenderer>(true);
+        if (prefabSr != null && prefabSr.sprite != null)
+        {
+            Vector2 spriteSize = prefabSr.sprite.bounds.size;
+            Vector3 scale = prefabSr.transform.lossyScale;
+            float width = Mathf.Abs(spriteSize.x * scale.x);
+            float height = Mathf.Abs(spriteSize.y * scale.y);
+            return new Vector2(width * 0.5f, height * 0.5f);
+        }
+
+        return Vector2.zero;
+    }
+
+    private void FireProjectile(Vector2 direction)
+    {
+        GameObject prefab = projectilePrefab;
+        GameObject proj;
+
+        if (prefab != null)
+        {
+            Vector3 spawnPos = transform.position + (Vector3)(direction.normalized * Mathf.Max(0f, projectileSpawnOffset));
+            proj = Instantiate(prefab, spawnPos, Quaternion.identity);
+        }
+        else
+        {
+            // Runtime fallback: plain circle
+            proj = new GameObject("DragonProjectile");
+            proj.transform.position = transform.position + (Vector3)(direction.normalized * Mathf.Max(0f, projectileSpawnOffset));
+            var rb = proj.AddComponent<Rigidbody2D>();
+            rb.gravityScale = 0f;
+            var col = proj.AddComponent<CircleCollider2D>();
+            col.radius = 0.2f;
+        }
+
+        var dp = proj.GetComponent<DragonProjectile>();
+        if (dp == null)
+        {
+            dp = proj.AddComponent<DragonProjectile>();
+        }
+
+        // Ignore collision between this projectile and the dragon itself
+        var dragonColliders = GetComponentsInChildren<Collider2D>();
+        for (int i = 0; i < dragonColliders.Length; i++)
+        {
+            dp.IgnoreCollider(dragonColliders[i]);
+        }
+
+        dp.Initialize(direction, projectileSpeed, projectileDamage, projectileLifetime, playerLayerMask);
     }
 
     private void DoRoarKnockback()
     {
         CachePlayerRefs();
-        
 
         if (playerController == null || playerTransform == null)
         {
             return;
         }
 
-        // assign roaring sprite
         if (spriteRenderer != null && roaring != null)
         {
             spriteRenderer.sprite = roaring;
@@ -243,7 +499,6 @@ public class EnemyDragon : MonoBehaviour, IDamageable
         }
     }
 
-    // go back to default sprite
     private IEnumerator RestoreSpriteAfterRoar()
     {
         yield return new WaitForSeconds(roarKnockbackDurationSeconds);
@@ -254,57 +509,72 @@ public class EnemyDragon : MonoBehaviour, IDamageable
         }
     }
 
-    private void SpawnFallingRock()
+    private void SpawnFlameSproutWave()
     {
-        activeRocks.RemoveAll(r => r == null);
-        if (maxActiveRocks > 0 && activeRocks.Count >= maxActiveRocks)
+        activeFlames.RemoveAll(f => f == null);
+        if (maxActiveFlames > 0 && activeFlames.Count >= maxActiveFlames)
         {
             return;
         }
 
-        Bounds bounds = GetRockSpawnBounds();
-        float x = UnityEngine.Random.Range(bounds.min.x, bounds.max.x);
-        float y = bounds.max.y;
-        Vector3 spawnPos = new Vector3(x, y, 0f);
-
-        GameObject rockObject;
-        if (fallingRockPrefab != null)
-        {
-            rockObject = Instantiate(fallingRockPrefab, spawnPos, Quaternion.identity);
-        }
-        else
-        {
-            rockObject = CreateRuntimeRock(spawnPos);
-        }
-
-        if (rockObject == null)
+        CachePlayerRefs();
+        if (playerTransform == null)
         {
             return;
         }
 
-        // In case the prefab asset was saved inactive.
-        if (!rockObject.activeSelf)
+        int count = Mathf.Max(1, flameCountPerWave);
+
+        // One flame always targets the player's current position.
+        SpawnOneFlame(new Vector3(playerTransform.position.x, playerTransform.position.y, 0f));
+
+        // Remaining flames spawn at random positions inside the arena.
+        for (int i = 1; i < count; i++)
         {
-            rockObject.SetActive(true);
+            float x = UnityEngine.Random.Range(flameAreaMin.x, flameAreaMax.x);
+            float y = UnityEngine.Random.Range(flameAreaMin.y, flameAreaMax.y);
+            SpawnOneFlame(new Vector3(x, y, 0f));
+        }
+    }
+
+    private void SpawnOneFlame(Vector3 spawnPos)
+    {
+        if (maxActiveFlames > 0 && activeFlames.Count >= maxActiveFlames)
+        {
+            return;
         }
 
-        ApplyLayerToHierarchy(rockObject, gameObject.layer);
-
-        var rock = rockObject.GetComponent<FallingRock>();
-        if (rock == null)
+        GameObject prefab = flameSproutPrefab != null ? flameSproutPrefab : flamePrefab;
+        if (prefab == null)
         {
-            rock = rockObject.AddComponent<FallingRock>();
+            Debug.LogWarning($"{name}: No flame sprout prefab assigned (and flamePrefab is null).", this);
+            return;
         }
 
-        rock.Initialize(rockWarningDelaySeconds, rockFallSpeed, rockDamageRadius, rockDamageAmount, playerLayerMask);
-        activeRocks.Add(rock);
+        GameObject flameObject = Instantiate(prefab, spawnPos, Quaternion.identity);
+        if (flameObject == null)
+        {
+            return;
+        }
+
+        if (!flameObject.activeSelf)
+        {
+            flameObject.SetActive(true);
+        }
+
+        var hazard = flameObject.GetComponent<FlameSproutHazard>();
+        if (hazard == null)
+        {
+            hazard = flameObject.AddComponent<FlameSproutHazard>();
+        }
+
+        hazard.Initialize(flameWarningDelaySeconds, flameDamageRadius, flameDamageAmount, flameLifetimeSeconds, playerLayerMask);
+        activeFlames.Add(hazard);
 
         if (logPhase1Actions)
         {
-            Debug.Log($"{name}: Spawned FallingRock at {spawnPos}", this);
+            Debug.Log($"{name}: Spawned FlameSprout at {spawnPos}", this);
         }
-
-        IgnoreRockCollisionWithSelf(rockObject);
     }
 
     private void ApplyLayerToHierarchy(GameObject root, int layer)
@@ -326,57 +596,6 @@ public class EnemyDragon : MonoBehaviour, IDamageable
         }
     }
 
-    private Bounds GetRockSpawnBounds()
-    {
-        if (rockSpawnArea != null)
-        {
-            return rockSpawnArea.bounds;
-        }
-
-        Vector3 center = transform.position;
-        Vector3 size = new Vector3(Mathf.Max(0.1f, fallbackSpawnAreaSize.x), Mathf.Max(0.1f, fallbackSpawnAreaSize.y), 0f);
-        return new Bounds(center, size);
-    }
-
-    private GameObject CreateRuntimeRock(Vector3 spawnPosition)
-    {
-        Debug.LogWarning($"{name}: Falling Rock Prefab is not set. Creating a simple runtime rock (no visuals).", this);
-
-        GameObject rock = new GameObject("FallingRock");
-        rock.transform.position = spawnPosition;
-        rock.transform.rotation = Quaternion.identity;
-
-        var rb = rock.AddComponent<Rigidbody2D>();
-        rb.gravityScale = 0f;
-        rb.freezeRotation = true;
-        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-
-        var circle = rock.AddComponent<CircleCollider2D>();
-        circle.radius = 0.4f;
-
-        return rock;
-    }
-
-    private void IgnoreRockCollisionWithSelf(GameObject rockObject)
-    {
-        if (rockObject == null)
-        {
-            return;
-        }
-
-        var rockColliders = rockObject.GetComponentsInChildren<Collider2D>();
-        var myColliders = GetComponentsInChildren<Collider2D>();
-
-        for (int r = 0; r < rockColliders.Length; r++)
-        {
-            if (rockColliders[r] == null) continue;
-            for (int m = 0; m < myColliders.Length; m++)
-            {
-                if (myColliders[m] == null) continue;
-                Physics2D.IgnoreCollision(rockColliders[r], myColliders[m]);
-            }
-        }
-    }
 
     private void CachePlayerRefs()
     {
@@ -391,7 +610,6 @@ public class EnemyDragon : MonoBehaviour, IDamageable
         }
     }
 
-
     /*
     flames patterns
     */
@@ -400,17 +618,14 @@ public class EnemyDragon : MonoBehaviour, IDamageable
         StartCoroutine(SpawnCloseFlamesCoroutine());
     }
 
-    // for flames contourning the boss
-    private IEnumerator SpawnCloseFlamesCoroutine(){
-        Vector3 center = centerPoint.position ;
-        // Dragon size to define the borders of the rectangle
+    private IEnumerator SpawnCloseFlamesCoroutine()
+    {
+        Vector3 center = centerPoint.position;
         SpriteRenderer sr = centerPoint.GetComponent<SpriteRenderer>();
 
         float halfWidth = sr.bounds.extents.x;
         float halfHeight = sr.bounds.extents.y;
 
-
-        // Small margin so flames are "around" the dragon, not inside it
         float margin = 1f;
         float flameSize = 1f;
 
@@ -426,15 +641,6 @@ public class EnemyDragon : MonoBehaviour, IDamageable
         {
             for (int iy = 0; iy <= stepsY; iy++)
             {
-                /* uncomment for empty rectangle
-                bool isBorder =
-                    ix == 0 || ix == stepsX ||
-                    iy == 0 || iy == stepsY;
-
-                if (!isBorder)
-                    continue;
-                */
-
                 float x = minX + ix * flameSize;
                 float y = minY + iy * flameSize;
 
@@ -444,11 +650,11 @@ public class EnemyDragon : MonoBehaviour, IDamageable
                 Destroy(flame, 4f);
             }
         }
+
         yield return null;
     }
 
-    // to spawn a spiral of flames from the dragon center
-    IEnumerator SpawnSpiral()
+    private IEnumerator SpawnSpiral()
     {
         float currentRadius = initialRadius;
         float currentAngle = 0f;
@@ -463,10 +669,7 @@ public class EnemyDragon : MonoBehaviour, IDamageable
                 0f
             );
 
-            //  Store the instance
             GameObject flame = Instantiate(flamePrefab, pos, Quaternion.identity);
-
-            //  Destroy the instance after 1 seconds
             Destroy(flame, 1f);
 
             currentAngle -= angleStep;
@@ -492,8 +695,10 @@ public class EnemyDragon : MonoBehaviour, IDamageable
         Debug.Log("current healt" + currentHealth + "damage taken:" + damageAmount);
         UpdatePhaseFromHealth();
 
-        // Update health bar
-        healthBar.value = currentHealth / maxHealth;
+        if (healthBar != null)
+        {
+            healthBar.value = currentHealth / maxHealth;
+        }
 
         if (currentHealth <= 0f)
         {
@@ -528,12 +733,14 @@ public class EnemyDragon : MonoBehaviour, IDamageable
 
     private void Die()
     {
+        GetComponent<DropTable>()?.SpawnDrops();
         Destroy(gameObject);
-        healthBar.gameObject.SetActive(false);
+        if (healthBar != null)
+        {
+            healthBar.gameObject.SetActive(false);
+        }
     }
 
-
-    //sound change
     private void OnEnable()
     {
         AudioManager am = FindAnyObjectByType<AudioManager>();
