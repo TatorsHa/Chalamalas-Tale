@@ -11,13 +11,10 @@ GameObject:
   - component: {fileID: 3008353668745691461}
   - component: {fileID: 5968777599721593099}
   - component: {fileID: 672155085305880507}
-  - component: {fileID: 6724042598694419774}
-  - component: {fileID: 2542549076725558783}
-  - component: {fileID: 6338989439524615427}
-  - component: {fileID: -2104305103450343537}
-  - component: {fileID: -7054266800089384462}
+  - component: {fileID: -4105682282112891271}
+  - component: {fileID: 1662580092874906340}
   m_Layer: 0
-  m_Name: EnemyArcher
+  m_Name: DragonArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -87,12 +84,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 3475298383841109393, guid: 98a9c30519f3f4d4aa2b4aaa7c6a6cc4, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 24cf210708c57674b894af3341b1738b, type: 3}
+  m_Color: {r: 0.09019609, g: 0.6203269, b: 0.7411765, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.13, y: 1.37}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -124,25 +121,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &6724042598694419774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4007544879303788332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88e175d39b4bf9345abaf692a9d504cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyChasing
-  maxHealth: 3
-  aggroRangeRadius: 5
-  showAggroRange: 1
-  speed: 2.5
-  spriteImage: {fileID: 0}
---- !u!61 &2542549076725558783
-BoxCollider2D:
+--- !u!58 &-4105682282112891271
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -176,18 +156,8 @@ BoxCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.13, y: 1.37}
-    newSize: {x: 1.13, y: 1.37}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
---- !u!114 &6338989439524615427
+  m_Radius: 0.16
+--- !u!114 &1662580092874906340
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -196,51 +166,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 4007544879303788332}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a3d9c5672c7b4b47bfdcc13e4329aec, type: 3}
+  m_Script: {fileID: 11500000, guid: 4a29f94f583ef4f4c818b844d76d7ab0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CollisionDamage
---- !u!114 &-2104305103450343537
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4007544879303788332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a45ba9b4a5030b049beef66e78fe83e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyArcher
-  maxHealth: 3
-  playerObjectName: Player
-  aggroRangeRadius: 6
-  shootingRangeRadius: 4.5
-  retreatTriggerRadius: 2.5
-  showAggroRange: 0
-  approachSpeed: 1.1
-  retreatSpeed: 0.75
-  projectilePrefab: {fileID: 4007544879303788332, guid: 77673bb050f3df240a30099edf8c55df, type: 3}
-  firePoint: {fileID: 0}
-  projectileSpeed: 6
-  fireCooldownSeconds: 1.25
-  projectileLifetimeSeconds: 4
-  projectileSpawnOffset: 0.25
---- !u!114 &-7054266800089384462
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4007544879303788332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fefd90b954a50d43801c655ee24c5b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DropTable
-  dropOrigin: {fileID: 0}
-  spawnJitter: {x: 0.35, y: 0.35}
-  drops:
-  - prefab: {fileID: 4007544879303788332, guid: 375553f974823fe40a5ab0dc49dda8cc, type: 3}
-    chance: 0.3
-    minCount: 1
-    maxCount: 1
+  m_EditorClassIdentifier: Assembly-CSharp::DragonProjectile

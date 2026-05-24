@@ -10,7 +10,6 @@ public class PlayerRangedAttack : MonoBehaviour
 
     // We use the player sprite to determine in which direction the projectile should fly
     private PlayerController playerController;
-    private int damage = 3;
     private float projectileSpeed = 8f;
     
 
@@ -62,6 +61,12 @@ public class PlayerRangedAttack : MonoBehaviour
         Vector3 spawnPos = transform.position + (Vector3)(attackDirection * attackSpawnOffset);
         
         GameObject projectile = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+
+        PlayerArrowProjectile projectileDamage = projectile.GetComponent<PlayerArrowProjectile>();
+        if (projectileDamage != null)
+        {
+            projectileDamage.SetDamage(playerController.GetAttackDamage());
+        }
         
         // Even if it spawns close, tell physics to ignore the player
         Collider2D playerCollider = GetComponent<Collider2D>();

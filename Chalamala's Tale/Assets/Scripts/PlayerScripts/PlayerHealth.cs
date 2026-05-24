@@ -46,6 +46,39 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    public bool Heal(float healAmount)
+    {
+        if (healAmount <= 0f || currentHealth >= maxHealth)
+        {
+            return false;
+        }
+
+        currentHealth = Mathf.Min(maxHealth, currentHealth + healAmount);
+        OnPlayerDamaged?.Invoke();
+        return true;
+    }
+
+    public void IncreaseMaxHealth(float amount, bool healAddedAmount = true)
+    {
+        if (amount <= 0f)
+        {
+            return;
+        }
+
+        maxHealth += amount;
+
+        if (healAddedAmount)
+        {
+            currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
+        }
+        else
+        {
+            currentHealth = Mathf.Min(currentHealth, maxHealth);
+        }
+
+        OnPlayerDamaged?.Invoke();
+    }
+
 
     // handles the respwan after dying (max health brought back only after the player is in the correct room to avoid asynch errors) 
     public void Resurrect()

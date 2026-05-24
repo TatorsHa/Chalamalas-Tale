@@ -2,11 +2,20 @@ using UnityEngine;
 
 public class PlayerMeleeSwipeAttackArea : MonoBehaviour
 {
-    // Damage dealt by the attack
-    private int damage = 3;
+    private PlayerController playerController;
+
+    private void Awake()
+    {
+        playerController = GetComponentInParent<PlayerController>();
+    }
 
     private void OnEnable()
     {
+        if (playerController == null)
+        {
+            playerController = GetComponentInParent<PlayerController>();
+        }
+
         AimAtNearestEnemy();
         Debug.Log($"Parent position: {transform.parent.position}, AttackArea position: {transform.position}");
     }
@@ -52,7 +61,7 @@ public class PlayerMeleeSwipeAttackArea : MonoBehaviour
         // (This tag has to be assigned manually to the enemy game objects)
         if (collider.CompareTag("Enemy"))
         {
-            collider.gameObject.GetComponentInParent<IDamageable>()?.TakeDamage(damage);
+            collider.gameObject.GetComponentInParent<IDamageable>()?.TakeDamage(GetDamageAmount());
             Debug.Log("Enemy hit!");
         }
         /**
@@ -65,5 +74,15 @@ public class PlayerMeleeSwipeAttackArea : MonoBehaviour
             enemyHealth.TakeDamage(damage);
         }
         **/
+    }
+
+    private float GetDamageAmount()
+    {
+        if (playerController == null)
+        {
+            return 0f;
+        }
+
+        return playerController.GetAttackDamage();
     }
 }

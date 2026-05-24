@@ -4,6 +4,9 @@ public class PlayerController : MonoBehaviour
 {
     public float speed = 5f;
 
+    [Header("Combat")]
+    [SerializeField] private int baseAttackDamage = 3;
+
     private Rigidbody2D body;
     private Vector2 movement;
 
@@ -184,5 +187,20 @@ public class PlayerController : MonoBehaviour
     public bool HasRangedAttack()
     {
         return rangedAttackEnabled;
+    }
+
+    public int GetAttackDamage()
+    {
+        return Mathf.Max(0, baseAttackDamage);
+    }
+
+    public void IncreaseAttackDamage(int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        baseAttackDamage += amount;
     }
 }
