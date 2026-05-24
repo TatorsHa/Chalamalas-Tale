@@ -23,18 +23,36 @@ public class PlayerMeleeSwipeAttackArea : MonoBehaviour
     private void AimAtNearestEnemy()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        if (enemies.Length == 0) {
+
+        if (enemies.Length == 0)
+        {
             transform.localPosition = new Vector3(0f, -5f, 0f);
             return;
         }
 
+        PlayerController player =
+            transform.parent.GetComponent<PlayerController>();
+
+        Vector2 facingDirection = GetFacingDirection(player.CurrentFacing);
 
         GameObject nearest = null;
         float shortestDistance = Mathf.Infinity;
 
         foreach (GameObject enemy in enemies)
         {
-            float distance = Vector3.Distance(transform.parent.position, enemy.transform.position);
+            Vector2 toEnemy =
+                (enemy.transform.position - transform.parent.position).normalized;
+
+            float dot = Vector2.Dot(facingDirection, toEnemy);
+
+            // Ignore only enemies behind player
+            if (dot < 0f)
+                continue;
+
+            float distance =
+                Vector2.Distance(transform.parent.position,
+                                enemy.transform.position);
+
             if (distance < shortestDistance)
             {
                 shortestDistance = distance;
@@ -44,16 +62,47 @@ public class PlayerMeleeSwipeAttackArea : MonoBehaviour
 
         if (nearest != null)
         {
-            Vector2 direction = (nearest.transform.position - transform.parent.position).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            Vector2 direction =
+                (nearest.transform.position - transform.parent.position).normalized;
 
-            // Apply rotation first
+            float angle =
+                Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
             transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        }
+        else
+        {
+            // No enemy in front → attack straight ahead
+            float angle =
+                Mathf.Atan2(facingDirection.y, facingDirection.x)
+                * Mathf.Rad2Deg;
 
-            // Then move it down in LOCAL space (relative to player)
-            transform.localPosition = new Vector3(0f, -5f, 0f);
+            transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        }
+
+        transform.localPosition = new Vector3(0f, -5f, 0f);
+    }
+    private Vector2 GetFacingDirection(PlayerController.PlayerFacingDirection facing)
+    {
+        switch (facing)
+        {
+            case PlayerController.PlayerFacingDirection.Up:
+                return Vector2.up;
+
+            case PlayerController.PlayerFacingDirection.Down:
+                return Vector2.down;
+
+            case PlayerController.PlayerFacingDirection.Left:
+                return Vector2.left;
+
+            case PlayerController.PlayerFacingDirection.Right:
+                return Vector2.right;
+
+            default:
+                return Vector2.down;
         }
     }
+
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
