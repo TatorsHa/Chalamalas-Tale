@@ -496,6 +496,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SimpleDoorTrigger
   side: 0
+  doorSpriteRenderer: {fileID: 423606729}
+  unlockedSprite: {fileID: 7132002008521023377, guid: 6ffecf36658042e4b9eda80370151dde, type: 3}
+--- !u!212 &423606729 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 1044341515027582818, guid: 88564b7b057758a458176d8ffd1dddc4, type: 3}
+  m_PrefabInstance: {fileID: 802562241}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &454242479
 GameObject:
   m_ObjectHideFlags: 0
@@ -906,7 +913,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 541990479009437769, guid: 88564b7b057758a458176d8ffd1dddc4, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.41
       objectReference: {fileID: 0}
     - target: {fileID: 541990479009437769, guid: 88564b7b057758a458176d8ffd1dddc4, type: 3}
       propertyPath: m_LocalPosition.z
@@ -946,7 +953,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2723980472990953254, guid: 88564b7b057758a458176d8ffd1dddc4, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.82
+      value: 4.86
       objectReference: {fileID: 0}
     - target: {fileID: 5556352575566973529, guid: 88564b7b057758a458176d8ffd1dddc4, type: 3}
       propertyPath: m_Name
