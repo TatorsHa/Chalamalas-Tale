@@ -1,10 +1,10 @@
 using UnityEngine;
 
-/// <summary>
+
 /// A projectile fired by the dragon during Phase 2.
 /// Uses a Dynamic Rigidbody2D so it is physically blocked by the boulder.
 /// Deals damage on collision with the player and destroys itself on any solid hit.
-/// </summary>
+
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CircleCollider2D))]
 public class DragonProjectile : MonoBehaviour
@@ -21,7 +21,11 @@ public class DragonProjectile : MonoBehaviour
         damage = Mathf.Max(0f, dmg);
         playerLayerMask = playerMask;
 
-        body.linearVelocity = direction.normalized * Mathf.Max(0f, speed);
+        Vector2 dir = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.right;
+
+        // In 2D, local +X (transform.right) is treated as the projectile tip direction.
+        transform.right = dir;
+        body.linearVelocity = dir * Mathf.Max(0f, speed);
 
         Destroy(gameObject, Mathf.Max(0.1f, lifetime));
     }
