@@ -133,6 +133,12 @@ public class PlayerHealth : MonoBehaviour
     {
         // Restore health AFTER scene is fully loaded
         currentHealth = maxHealth;
+
+        if (scene.name == "Room")
+        {
+            transform.position = Vector3.zero; // after being killed by dragon you get respawned at the center to avoid being pushed out of the camera
+        }
+
         // refresh heats UI (ensuring that they are full after respwn)
         OnPlayerDamaged?.Invoke();
 

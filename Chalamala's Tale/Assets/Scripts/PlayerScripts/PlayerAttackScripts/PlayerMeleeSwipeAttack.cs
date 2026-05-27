@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerMeleeSwipeAttack : MonoBehaviour
 {
     private GameObject attackArea = default;
+    private PlayerController playerController;
+
 
     private bool attacking = false;
     private float timeToAttack = 0.25f;
@@ -14,6 +16,8 @@ public class PlayerMeleeSwipeAttack : MonoBehaviour
     void Start()
     {
         attackArea = transform.GetChild(0).gameObject;
+        playerController = GetComponentInParent<PlayerController>();
+
 
         attacking = false;
         attackArea.SetActive(attacking);
@@ -47,5 +51,6 @@ public class PlayerMeleeSwipeAttack : MonoBehaviour
     {
         attacking = true;
         attackArea.SetActive(attacking);
+         playerController?.PlayAttackAnimation();
     }
 }
