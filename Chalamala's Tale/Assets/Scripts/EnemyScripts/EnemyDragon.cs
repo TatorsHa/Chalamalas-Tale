@@ -22,7 +22,12 @@ Dragon Boss:
 [RequireComponent(typeof(Collider2D))]
 public class EnemyDragon : MonoBehaviour, IDamageable
 {
-    public Sprite roaring;
+    [Header("Visuals")]
+    [FormerlySerializedAs("roaring")]
+    [SerializeField] private Sprite roarSprite;
+    [Tooltip("How long the roar sprite stays visible.")]
+    [SerializeField] private float roarSpriteDurationSeconds = 0.35f;
+
     private SpriteRenderer spriteRenderer;
     private Sprite defaultSprite;
 
@@ -88,6 +93,12 @@ public class EnemyDragon : MonoBehaviour, IDamageable
     [Tooltip("World-space bounds of the arena. Flames spawn randomly inside this rectangle.")]
     [SerializeField] private Vector2 flameAreaMin = new Vector2(-8f, -5f);
     [SerializeField] private Vector2 flameAreaMax = new Vector2(8f, 5f);
+    [Tooltip("Optional transform used as center of the Phase 1 flame spawn area.")]
+    [SerializeField] private Transform flameSpawnAreaCenter;
+    [Tooltip("Optional rectangle size for Phase 1 flames when using Flame Spawn Area Center.")]
+    [SerializeField] private Vector2 flameSpawnAreaSize = new Vector2(16f, 10f);
+    [Tooltip("Extra inward padding from flame spawn area edges.")]
+    [SerializeField] private float flameSpawnEdgePadding = 0f;
 
     [FormerlySerializedAs("rockSpawnIntervalSeconds")]
     [SerializeField] private float flameWaveIntervalSeconds = 1.25f;
@@ -135,7 +146,11 @@ public class EnemyDragon : MonoBehaviour, IDamageable
     [SerializeField] private float projectileSpeed = 8f;
     [SerializeField] private float projectileDamage = 1f;
     [SerializeField] private float projectileLifetime = 6f;
-    [Tooltip("How far from the dragon center projectiles are spawned, along their travel direction.")]
+    [Tooltip("Optional exact origin transform (for example, dragon mouth). If null, local offset is used.")]
+    [SerializeField] private Transform projectileSpawnPoint;
+    [Tooltip("Fallback local-space spawn offset when Projectile Spawn Point is not assigned.")]
+    [SerializeField] private Vector2 projectileSpawnLocalOffset = new Vector2(0.6f, 0f);
+    [Tooltip("Extra distance from spawn origin along projectile travel direction.")]
     [SerializeField] private float projectileSpawnOffset = 0.6f;
     [Tooltip("Arc start angle in degrees. Unity convention: 0=right 90=up 180=left 270=down.")]
     [SerializeField] private float barrageMinAngle = 180f;
@@ -432,17 +447,21 @@ public class EnemyDragon : MonoBehaviour, IDamageable
     {
         GameObject prefab = projectilePrefab;
         GameObject proj;
+        Vector2 dir = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.right;
+        Vector3 spawnOrigin = projectileSpawnPoint != null
+            ? projectileSpawnPoint.position
+            : transform.TransformPoint(projectileSpawnLocalOffset);
+        Vector3 spawnPos = spawnOrigin + (Vector3)(dir * Mathf.Max(0f, projectileSpawnOffset));
 
         if (prefab != null)
         {
-            Vector3 spawnPos = transform.position + (Vector3)(direction.normalized * Mathf.Max(0f, projectileSpawnOffset));
             proj = Instantiate(prefab, spawnPos, Quaternion.identity);
         }
         else
         {
             // Runtime fallback: plain circle
             proj = new GameObject("DragonProjectile");
-            proj.transform.position = transform.position + (Vector3)(direction.normalized * Mathf.Max(0f, projectileSpawnOffset));
+            proj.transform.position = spawnPos;
             var rb = proj.AddComponent<Rigidbody2D>();
             rb.gravityScale = 0f;
             var col = proj.AddComponent<CircleCollider2D>();
@@ -474,9 +493,9 @@ public class EnemyDragon : MonoBehaviour, IDamageable
             return;
         }
 
-        if (spriteRenderer != null && roaring != null)
+        if (spriteRenderer != null && roarSprite != null)
         {
-            spriteRenderer.sprite = roaring;
+            spriteRenderer.sprite = roarSprite;
             StartCoroutine(RestoreSpriteAfterRoar());
         }
 
@@ -501,7 +520,8 @@ public class EnemyDragon : MonoBehaviour, IDamageable
 
     private IEnumerator RestoreSpriteAfterRoar()
     {
-        yield return new WaitForSeconds(roarKnockbackDurationSeconds);
+        float visualDuration = Mathf.Max(0.01f, roarSpriteDurationSeconds);
+        yield return new WaitForSeconds(visualDuration);
 
         if (spriteRenderer != null)
         {
@@ -525,15 +545,62 @@ public class EnemyDragon : MonoBehaviour, IDamageable
 
         int count = Mathf.Max(1, flameCountPerWave);
 
+        Vector2 spawnCenter;
+        Vector2 spawnSize;
+        GetFlameSpawnAreaRect(out spawnCenter, out spawnSize);
+
+        float pad = Mathf.Max(0f, flameSpawnEdgePadding);
+        float halfX = Mathf.Max(0f, spawnSize.x * 0.5f - pad);
+        float halfY = Mathf.Max(0f, spawnSize.y * 0.5f - pad);
+
+        float minX = spawnCenter.x - halfX;
+        float maxX = spawnCenter.x + halfX;
+        float minY = spawnCenter.y - halfY;
+        float maxY = spawnCenter.y + halfY;
+
         // One flame always targets the player's current position.
-        SpawnOneFlame(new Vector3(playerTransform.position.x, playerTransform.position.y, 0f));
+        SpawnOneFlame(new Vector3(
+            Mathf.Clamp(playerTransform.position.x, minX, maxX),
+            Mathf.Clamp(playerTransform.position.y, minY, maxY),
+            0f));
 
         // Remaining flames spawn at random positions inside the arena.
         for (int i = 1; i < count; i++)
         {
-            float x = UnityEngine.Random.Range(flameAreaMin.x, flameAreaMax.x);
-            float y = UnityEngine.Random.Range(flameAreaMin.y, flameAreaMax.y);
+            float x = minX <= maxX ? UnityEngine.Random.Range(minX, maxX) : spawnCenter.x;
+            float y = minY <= maxY ? UnityEngine.Random.Range(minY, maxY) : spawnCenter.y;
             SpawnOneFlame(new Vector3(x, y, 0f));
+        }
+    }
+
+    private void GetFlameSpawnAreaRect(out Vector2 center, out Vector2 size)
+    {
+        center = (flameAreaMin + flameAreaMax) * 0.5f;
+        size = new Vector2(
+            Mathf.Max(0.1f, Mathf.Abs(flameAreaMax.x - flameAreaMin.x)),
+            Mathf.Max(0.1f, Mathf.Abs(flameAreaMax.y - flameAreaMin.y)));
+
+        if (flameSpawnAreaCenter == null)
+        {
+            return;
+        }
+
+        center = flameSpawnAreaCenter.position;
+        size = new Vector2(
+            Mathf.Max(0.1f, flameSpawnAreaSize.x),
+            Mathf.Max(0.1f, flameSpawnAreaSize.y));
+
+        Renderer areaRenderer = flameSpawnAreaCenter.GetComponent<Renderer>();
+        if (areaRenderer == null)
+        {
+            areaRenderer = flameSpawnAreaCenter.GetComponentInChildren<Renderer>();
+        }
+
+        if (areaRenderer != null)
+        {
+            Bounds b = areaRenderer.bounds;
+            center = b.center;
+            size = new Vector2(Mathf.Max(0.1f, b.size.x), Mathf.Max(0.1f, b.size.y));
         }
     }
 
