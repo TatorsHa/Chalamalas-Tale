@@ -48,9 +48,10 @@ public class EnemyDragon : MonoBehaviour, IDamageable
     [Header("UI")]
     [SerializeField] private Slider healthBar;
 
+
     /*
     Flames spawned later in the battle and relative variables
-    */
+    
     public GameObject flamePrefab;
 
     // values for different patterns
@@ -66,6 +67,7 @@ public class EnemyDragon : MonoBehaviour, IDamageable
     public float flameCooldown = 4f;
     private float spiralTimer = 0f;
     public float spiralCooldown = 10f;
+    */
 
     [Header("Phases")]
     [Tooltip("Switch to Phase 2 when health <= maxHealth * this value")]
@@ -241,6 +243,7 @@ public class EnemyDragon : MonoBehaviour, IDamageable
 
     private void Update()
     {
+        /*
         // timer handling flames coreographies
         flameTimer += Time.deltaTime;
         spiralTimer += Time.deltaTime;
@@ -256,6 +259,7 @@ public class EnemyDragon : MonoBehaviour, IDamageable
             StartCoroutine(SpawnSpiral());
             spiralTimer = 0f;
         }
+        */
 
         if (currentPhase == DragonPhase.Phase1)
         {
@@ -611,7 +615,7 @@ public class EnemyDragon : MonoBehaviour, IDamageable
             return;
         }
 
-        GameObject prefab = flameSproutPrefab != null ? flameSproutPrefab : flamePrefab;
+        GameObject prefab = flameSproutPrefab ;
         if (prefab == null)
         {
             Debug.LogWarning($"{name}: No flame sprout prefab assigned (and flamePrefab is null).", this);
@@ -679,12 +683,13 @@ public class EnemyDragon : MonoBehaviour, IDamageable
 
     /*
     flames patterns
-    */
+    
     public void SpawnCloseFlames()
     {
         StartCoroutine(SpawnCloseFlamesCoroutine());
     }
 
+  
     private IEnumerator SpawnCloseFlamesCoroutine()
     {
         Vector3 center = centerPoint.position;
@@ -745,6 +750,7 @@ public class EnemyDragon : MonoBehaviour, IDamageable
             yield return new WaitForSecondsRealtime(spiralDelay);
         }
     }
+    */
 
     public void TakeDamage(float damageAmount)
     {

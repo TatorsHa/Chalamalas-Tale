@@ -972,8 +972,8 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 0
   healthBar: {fileID: 2146074211}
-  flamePrefab: {fileID: 0}
-  centerPoint: {fileID: 0}
+  flamePrefab: {fileID: 7608552235706221553, guid: 7d333c6d116b1844191377658057d57e, type: 3}
+  centerPoint: {fileID: 1174918017}
   initialRadius: 0.5
   radiusStep: 0.1
   angleStep: 10
