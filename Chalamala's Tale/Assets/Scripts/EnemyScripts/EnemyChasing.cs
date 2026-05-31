@@ -37,7 +37,7 @@ public class EnemyChasing : MonoBehaviour, IDamageable
         // spriteImage = GetComponent<SpriteRenderer>();
         
         // Instantiate the aggro range object based on the decided range radius
-        CreateAggroRange();
+        //CreateAggroRange();
 
         // Set the hp to max at spawn
         currentHealth = maxHealth;
@@ -47,8 +47,8 @@ public class EnemyChasing : MonoBehaviour, IDamageable
     void Update()
     {
         // Show enemy aggro range if flag is turned on
-        if(showAggroRange) this.aggroRange.GetComponent<MeshRenderer>().enabled = true;
-        else this.aggroRange.GetComponent<MeshRenderer>().enabled = false;
+        //if(showAggroRange) this.aggroRange.GetComponent<MeshRenderer>().enabled = true;
+        //else this.aggroRange.GetComponent<MeshRenderer>().enabled = false;
 
         // Calculate whether the player is within the enemy's aggro range
         float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position); 
