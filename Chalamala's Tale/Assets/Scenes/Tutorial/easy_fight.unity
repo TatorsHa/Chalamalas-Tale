@@ -271,19 +271,51 @@ PrefabInstance:
       propertyPath: m_Name
       value: Room (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1664838022748503104, guid: f4e4264eacfc1514490cfc3dda564048, type: 3}
     m_RemovedGameObjects:
     - {fileID: 5556352575566973529, guid: f4e4264eacfc1514490cfc3dda564048, type: 3}
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1660783697730257358, guid: f4e4264eacfc1514490cfc3dda564048, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 1435538511}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5733006222059511151, guid: f4e4264eacfc1514490cfc3dda564048, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 209744205}
   m_SourcePrefab: {fileID: 100100000, guid: f4e4264eacfc1514490cfc3dda564048, type: 3}
+--- !u!4 &209744203 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1660783697730257358, guid: f4e4264eacfc1514490cfc3dda564048, type: 3}
+  m_PrefabInstance: {fileID: 209744202}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &209744204 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5733006222059511151, guid: f4e4264eacfc1514490cfc3dda564048, type: 3}
+  m_PrefabInstance: {fileID: 209744202}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &209744205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 209744204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f125fa34aa5a27e48ab2d0ff6127a025, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleRoomSetup
+  doorTop: {fileID: 262674807}
+  doorBottom: {fileID: 262674808}
+  ennemies: []
 --- !u!1001 &262674806
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 209744203}
     m_Modifications:
     - target: {fileID: 541990479009437769, guid: 88564b7b057758a458176d8ffd1dddc4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -512,7 +544,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1.2, y: 1.13}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -613,8 +645,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.74213827, g: 0.091016866, b: 0.091016866, a: 1}
+  m_Sprite: {fileID: -7870200531635767695, guid: 10d0958c371771743847d24d795a9bd7, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -709,7 +741,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1.2, y: 1.13}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -810,8 +842,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.74213827, g: 0.091016866, b: 0.091016866, a: 1}
+  m_Sprite: {fileID: -7870200531635767695, guid: 10d0958c371771743847d24d795a9bd7, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1145,6 +1177,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1127418493}
   m_CullTransparentMesh: 1
+--- !u!4 &1435538511 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 541990479009437769, guid: 88564b7b057758a458176d8ffd1dddc4, type: 3}
+  m_PrefabInstance: {fileID: 262674806}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1473065288
 GameObject:
   m_ObjectHideFlags: 0
@@ -1484,7 +1521,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1.2, y: 1.13}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -1585,8 +1622,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.74213827, g: 0.091016866, b: 0.091016866, a: 1}
+  m_Sprite: {fileID: -7870200531635767695, guid: 10d0958c371771743847d24d795a9bd7, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1634,6 +1671,5 @@ SceneRoots:
   - {fileID: 1473065290}
   - {fileID: 179822548}
   - {fileID: 51412322}
-  - {fileID: 262674806}
   - {fileID: 1501554941}
   - {fileID: 209744202}

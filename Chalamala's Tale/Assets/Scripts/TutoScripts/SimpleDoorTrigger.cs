@@ -12,18 +12,25 @@ public class SimpleDoorTrigger : MonoBehaviour
 
     private bool unlocked = false;
 
+    void Start()
+    {
+        CheckEnemiesAndUnlock();
+    }
+
     void Update()
     {
-        // Only check until unlocked
-        if (unlocked) return;
+        if (!unlocked)
+            CheckEnemiesAndUnlock();
+    }
 
+    void CheckEnemiesAndUnlock()
+    {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
         if (enemies.Length == 0)
         {
             unlocked = true;
 
-            // Change sprite if assigned
             if (doorSpriteRenderer != null && unlockedSprite != null)
             {
                 doorSpriteRenderer.sprite = unlockedSprite;
