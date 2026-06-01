@@ -967,20 +967,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5512987feeb71142ba4c0588056e417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  roarSprite: {fileID: 0}
+  roarSprite: {fileID: 3765682262604492960, guid: 9e26d918a53de9348b4ee1ab8a09effe, type: 3}
   roarSpriteDurationSeconds: 0.35
   maxHealth: 100
   currentHealth: 0
   healthBar: {fileID: 2146074211}
-  flamePrefab: {fileID: 7608552235706221553, guid: 7d333c6d116b1844191377658057d57e, type: 3}
-  centerPoint: {fileID: 1174918017}
-  initialRadius: 0.5
-  radiusStep: 0.1
-  angleStep: 10
-  flameCount: 70
-  spiralDelay: 0.01
-  flameCooldown: 4
-  spiralCooldown: 10
   phase2HealthPercent: 0.66
   phase3HealthPercent: 0.33
   onPhaseChanged:
