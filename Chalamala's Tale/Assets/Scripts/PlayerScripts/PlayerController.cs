@@ -4,6 +4,8 @@ public class PlayerController : MonoBehaviour
 {
     public float speed = 5f;
 
+    private Animator animator;
+    private Vector2 lastMoveDirection = Vector2.down;
     [Header("Combat")]
     [SerializeField] private int baseAttackDamage = 3;
 
@@ -11,10 +13,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 movement;
 
     public SpriteRenderer spriteImage;
-    public Sprite spriteRight;
-    public Sprite spriteLeft;
-    public Sprite spriteIdle;
-    public Sprite spriteBack;
+
 
     // to stop player actions when the scene is paused (menu, dialogues)
     public bool canMove = true; 
@@ -53,7 +52,7 @@ public class PlayerController : MonoBehaviour
     {
         body = GetComponentInChildren<Rigidbody2D>();
         spriteImage = GetComponentInChildren<SpriteRenderer>();
-        spriteImage.sprite = spriteIdle;
+        animator = GetComponentInChildren<Animator>();
 
         // Relevant for dodgeroll logic, state is "Normal" by default
         playerState = PlayerState.Normal;
@@ -95,38 +94,36 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void HandleBasicMovement()
-    {
+    private void HandleBasicMovement(){
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
 
+        movement.Normalize();
+
         body.linearVelocity = movement * speed;
 
-        // Change sprite based on direction
-        if (movement.x > 0)
+        if (movement != Vector2.zero)
         {
-            spriteImage.sprite = spriteRight;
-            CurrentFacing = PlayerFacingDirection.Right;
+            lastMoveDirection = movement;
+
+            // Determine facing direction
+            if (Mathf.Abs(movement.x) > Mathf.Abs(movement.y))
+            {
+                CurrentFacing = movement.x > 0
+                    ? PlayerFacingDirection.Right
+                    : PlayerFacingDirection.Left;
+            }
+            else
+            {
+                CurrentFacing = movement.y > 0
+                    ? PlayerFacingDirection.Up
+                    : PlayerFacingDirection.Down;
+            }
         }
-        else if (movement.x < 0)
-        {
-            spriteImage.sprite = spriteLeft;
-            CurrentFacing = PlayerFacingDirection.Left;
-        }
-        else if (movement.y > 0)
-        {
-            spriteImage.sprite = spriteBack;
-            CurrentFacing = PlayerFacingDirection.Up;
-        }
-        else if (movement.y < 0)
-        {
-            spriteImage.sprite = spriteIdle;
-            CurrentFacing = PlayerFacingDirection.Down;
-        }
-        else
-        {
-            return;
-        }
+        animator.SetFloat("MoveX", lastMoveDirection.x);
+        animator.SetFloat("MoveY", lastMoveDirection.y);
+        animator.SetBool("IsMoving", movement != Vector2.zero);
+        Debug.Log($"MoveX: {movement.x} MoveY: {movement.y}");
     }
 
     private void HandleDodgeRoll()
@@ -138,6 +135,29 @@ public class PlayerController : MonoBehaviour
             slideDirection = movement.normalized;
             slideSpeed = 15f;
         }
+    }
+    public void PlayAttackAnimation()
+    {
+        Vector2 facing = GetFacingVector();
+
+        animator.SetFloat("AttackX", facing.x);
+        animator.SetFloat("AttackY", facing.y);
+        animator.SetTrigger("Attack");
+    }
+    private Vector2 GetFacingVector()
+    {
+        switch (CurrentFacing)
+        {
+            case PlayerFacingDirection.Up:
+                return Vector2.up;
+            case PlayerFacingDirection.Down:
+                return Vector2.down;
+            case PlayerFacingDirection.Left:
+                return Vector2.left;
+            case PlayerFacingDirection.Right:
+                return Vector2.right;
+        }
+        return Vector2.down;
     }
 
     private void HandleDodgeRollSliding()
