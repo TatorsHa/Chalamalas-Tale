@@ -13,6 +13,14 @@ public class Video : MonoBehaviour
         videoPlayer.Play();
     }
 
+    // skip video
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            SceneManager.LoadSceneAsync(nextScene);
+        }
+    }
     void OnVideoEnd(VideoPlayer vp)
     {
         SceneManager.LoadSceneAsync(nextScene);
