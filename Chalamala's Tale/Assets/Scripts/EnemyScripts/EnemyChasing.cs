@@ -1,10 +1,21 @@
 using UnityEngine;
+using System.Collections; // for damage signal coroutine
 
 public class EnemyChasing : MonoBehaviour, IDamageable
 {
     [Header("Health")]
     [SerializeField] private float maxHealth = 3f;
     private float currentHealth;
+
+
+    // to have a signal of damage taken, the sprite changes color
+    [Header("Damage Flash")]
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Color damageColor = Color.red;
+    [SerializeField] private float flashDuration = 0.1f;
+
+    public Color originalColor;
+    private Coroutine flashCoroutine;
 
     // Reference to the player object, as to be able to calculate the distance to it and how to move towards it, etc.
     GameObject player;
@@ -20,8 +31,7 @@ public class EnemyChasing : MonoBehaviour, IDamageable
     private Vector2 movement;
     private Rigidbody2D body;
 
-    // Unused field, for adding enemy sprite later on :)
-    public SpriteRenderer spriteImage;
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -32,9 +42,7 @@ public class EnemyChasing : MonoBehaviour, IDamageable
         // Get the player object
         player = GameObject.Find("Player");
 
-        body = GetComponent<Rigidbody2D>();
-        // No sprite yet :)
-        // spriteImage = GetComponent<SpriteRenderer>();
+        body = GetComponent<Rigidbody2D>();        
         
         // Instantiate the aggro range object based on the decided range radius
         //CreateAggroRange();
@@ -75,12 +83,27 @@ public class EnemyChasing : MonoBehaviour, IDamageable
             return;
         }
 
+        // damage signal
+        if (flashCoroutine != null)
+            StopCoroutine(flashCoroutine);
+
+        flashCoroutine = StartCoroutine(DamageFlash());
+
         currentHealth -= damageAmount;
         if (currentHealth <= 0f)
         {
             GetComponent<DropTable>()?.SpawnDrops();
             Destroy(gameObject);
         }
+    }
+
+    private IEnumerator DamageFlash()
+    {
+        spriteRenderer.color = damageColor;
+
+        yield return new WaitForSeconds(flashDuration);
+
+        spriteRenderer.color = originalColor;
     }
 
     // Helper method that sets up the aggro range centered on the object (enemy) that this script is attached to.

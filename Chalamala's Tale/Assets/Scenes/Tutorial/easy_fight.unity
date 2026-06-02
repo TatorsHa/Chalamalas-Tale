@@ -564,11 +564,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88e175d39b4bf9345abaf692a9d504cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyChasing
-  maxHealth: 3
+  maxHealth: 10
+  spriteRenderer: {fileID: 304607989}
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
+  originalColor: {r: 1, g: 1, b: 1, a: 1}
   aggroRangeRadius: 5
   showAggroRange: 1
   speed: 2.5
-  spriteImage: {fileID: 0}
 --- !u!50 &304607988
 Rigidbody2D:
   serializedVersion: 5
@@ -762,10 +765,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyChasing
   maxHealth: 3
+  spriteRenderer: {fileID: 703630177}
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
+  originalColor: {r: 1, g: 1, b: 1, a: 1}
   aggroRangeRadius: 5
   showAggroRange: 1
   speed: 2.5
-  spriteImage: {fileID: 0}
 --- !u!50 &703630176
 Rigidbody2D:
   serializedVersion: 5
@@ -1542,10 +1548,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyChasing
   maxHealth: 3
+  spriteRenderer: {fileID: 1674480694}
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
+  originalColor: {r: 1, g: 1, b: 1, a: 1}
   aggroRangeRadius: 5
   showAggroRange: 1
   speed: 2.5
-  spriteImage: {fileID: 0}
 --- !u!50 &1674480693
 Rigidbody2D:
   serializedVersion: 5
