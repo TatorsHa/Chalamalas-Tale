@@ -410,8 +410,16 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7519488205893092035, guid: 9f279eb3b904a4e1fab29ebad41cfac2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2138986833}
   m_SourcePrefab: {fileID: 100100000, guid: 9f279eb3b904a4e1fab29ebad41cfac2, type: 3}
+--- !u!1 &763839705 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7519488205893092035, guid: 9f279eb3b904a4e1fab29ebad41cfac2, type: 3}
+  m_PrefabInstance: {fileID: 763839704}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &802562241
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1455,6 +1463,7 @@ MonoBehaviour:
   textMeshPro: {fileID: 549111858}
   database: {fileID: 11400000, guid: e5f4e87d1c229914c915786c165b3a01, type: 2}
   currentScene: Tutorial_first_scene
+  cheese: 0
   textSpeed: 0
 --- !u!1 &1923563289
 GameObject:
@@ -1772,12 +1781,26 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4241963996546195205, guid: 9f279eb3b904a4e1fab29ebad41cfac2, type: 3}
   m_PrefabInstance: {fileID: 763839704}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 763839705}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2901e4b24708a464e921c0ade0a3099c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenu
+--- !u!114 &2138986833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 763839705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cd8ade7b3a5ab48871d647bd6770a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  goatDead: 0
+  hasCheese: 0
 --- !u!1 &2140047850
 GameObject:
   m_ObjectHideFlags: 0
