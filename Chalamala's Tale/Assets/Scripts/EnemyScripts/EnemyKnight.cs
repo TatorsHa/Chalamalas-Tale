@@ -15,6 +15,14 @@ public class EnemyKnight : MonoBehaviour, IDamageable
     [SerializeField] private float maxHealth = 5f;
     private float currentHealth;
 
+    // to have a signal of damage taken, the sprite changes color
+    [Header("Damage Flash")]
+    [SerializeField] private Color damageColor = Color.red;
+    [SerializeField] private float flashDuration = 0.1f;
+
+    public Color originalColor;
+    private Coroutine flashCoroutine;
+
     [Header("Targeting")]
     [SerializeField] private string playerObjectName = "Player";
     [SerializeField] private float aggroRangeRadius = 6f;
@@ -173,6 +181,12 @@ public class EnemyKnight : MonoBehaviour, IDamageable
         {
             return;
         }
+        // damage signal
+        if (flashCoroutine != null)
+            StopCoroutine(flashCoroutine);
+
+        flashCoroutine = StartCoroutine(DamageFlash());
+
 
         if (isBlocking)
         {
@@ -193,6 +207,15 @@ public class EnemyKnight : MonoBehaviour, IDamageable
             Destroy(gameObject);
         }
     }
+    private IEnumerator DamageFlash()
+    {
+        spriteRenderer.color = damageColor;
+
+        yield return new WaitForSeconds(flashDuration);
+
+        spriteRenderer.color = originalColor;
+    }
+
 
     private IEnumerator BlockCoroutine()
     {

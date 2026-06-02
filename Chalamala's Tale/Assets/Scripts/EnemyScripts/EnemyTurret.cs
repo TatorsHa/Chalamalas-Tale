@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections; // for damage signal coroutine
 public class EnemyTurret : MonoBehaviour, IDamageable
 {
     private enum ShotPattern
@@ -11,6 +11,15 @@ public class EnemyTurret : MonoBehaviour, IDamageable
     [Header("Health")]
     [SerializeField] private float maxHealth = 3f;
     private float currentHealth;
+
+    // to have a signal of damage taken, the sprite changes color
+    [Header("Damage Flash")]
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Color damageColor = Color.red;
+    [SerializeField] private float flashDuration = 0.1f;
+
+    public Color originalColor;
+    private Coroutine flashCoroutine;
 
     [Header("Shooting")]
     [SerializeField] private GameObject projectilePrefab;
@@ -136,6 +145,11 @@ public class EnemyTurret : MonoBehaviour, IDamageable
         {
             return;
         }
+        // damage signal
+        if (flashCoroutine != null)
+            StopCoroutine(flashCoroutine);
+
+        flashCoroutine = StartCoroutine(DamageFlash());
 
         currentHealth -= damageAmount;
         if (currentHealth <= 0f)
@@ -143,5 +157,14 @@ public class EnemyTurret : MonoBehaviour, IDamageable
             GetComponent<DropTable>()?.SpawnDrops();
             Destroy(gameObject);
         }
+    }
+    
+    private IEnumerator DamageFlash()
+    {
+        spriteRenderer.color = damageColor;
+
+        yield return new WaitForSeconds(flashDuration);
+
+        spriteRenderer.color = originalColor;
     }
 }
