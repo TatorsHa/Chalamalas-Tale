@@ -391,6 +391,7 @@ public class EnemyGoat : MonoBehaviour, IDamageable
         {
             GetComponent<DropTable>()?.SpawnDrops();
             Destroy(gameObject);
+            GameManager.Instance.goatDead = true;
         }
     }
 

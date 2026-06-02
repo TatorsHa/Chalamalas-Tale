@@ -9,11 +9,11 @@ public class GridManager : MonoBehaviour
     public HashSet<(int, int)> visitedRooms = new HashSet<(int, int)>();
 
     // Keep track of what rooms have been cleared, and should not have spawning enemies
-    // This has to be tracked seperately from visited rooms, since you can visit a room without clearing it by dying.
+    // This has to be tracked separately from visited rooms, since you can visit a room without clearing it by dying.
     // Initialized to false by default
     public bool[,] clearedRooms = new bool[4, 4];
 
-    // Keep track of the types of the rooms (enemy, npc, boss, startc, etc.)
+    // Keep track of the types of the rooms (enemy, npc, boss, start, etc.)
     public RoomTypes[,] roomTypes = new RoomTypes[4, 4];
 
     // Keeps track of the current row and column in the 4x4 room grid. 
@@ -22,11 +22,32 @@ public class GridManager : MonoBehaviour
     public int currentCol = 3;
 
     // Keeps track of the side from which the player exits the room, as to place him on the opposite side of the next room
-    // (If u go left, u should come out at the right side of the next room, ect.)
+    // (If u go left, u should come out at the right side of the next room, etc.)
     public int enteredFromSide = -1;
 
     private const int ROWS = 4;
     private const int COLS = 4;
+
+    private Dictionary<RoomTypes, int> roomTypeCount = new Dictionary<RoomTypes, int>();
+    private const int MAX_PER_TYPE = 3; // not to have too many repetitions of the same room
+
+    private bool CanUseType(RoomTypes type)
+    {
+        if (!roomTypeCount.ContainsKey(type))
+            roomTypeCount[type] = 0;
+
+        return roomTypeCount[type] < MAX_PER_TYPE;
+    }
+
+    private void RegisterType(RoomTypes type)
+    {
+        if (!roomTypeCount.ContainsKey(type))
+            roomTypeCount[type] = 0;
+
+        roomTypeCount[type]++;
+    }
+
+    private bool[,] reserved = new bool[4, 4]; // not to override fixed or important rooms
 
     // [row, col, side]  side: 0=top, 1=right, 2=bottom, 3=left
     // true = OPEN (doorway exists)
@@ -41,7 +62,7 @@ public class GridManager : MonoBehaviour
         ( 0,  1,  1,  3),  // right:  my=right(1),  neighbor=left(3)
     };
 
-    // Creates the GridManager before any scene loads if it doesnt exist yet
+    // Creates the GridManager before any scene loads if it doesn't exist yet
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void CreateInstance()
     {
@@ -51,7 +72,7 @@ public class GridManager : MonoBehaviour
 
     void Awake()
     {
-        // Singleton pattern that destroys duplicates and persist across scenes
+        // Singleton pattern that destroys duplicates and persists across scenes
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
@@ -65,7 +86,6 @@ public class GridManager : MonoBehaviour
     public void MoveToRoom(int side)
     {
         // Mark the previous room as cleared
-        // I hope this doesnt introduce a bug where dying will move player to start, and mark the death room as cleared
         clearedRooms[currentRow, currentCol] = true;
 
         enteredFromSide = side;
@@ -76,16 +96,15 @@ public class GridManager : MonoBehaviour
 
         // Check what type of room should be loaded (start room, enemy room, npc room, boss room, etc.)
         RoomTypes roomTypeToLoad = roomTypes[currentRow, currentCol];
-        
+
         switch (roomTypeToLoad)
         {
             case RoomTypes.Chasing_Enemy_Room:
                 SceneManager.LoadScene("RoomEnemyChasing");
                 break;
-            
+
             case RoomTypes.NPC_Room:
                 SceneManager.LoadScene("RoomBasicNPC");
-                //SceneManager.LoadScene("Room");
                 break;
 
             case RoomTypes.Start_Room:
@@ -96,40 +115,63 @@ public class GridManager : MonoBehaviour
                 SceneManager.LoadScene("RoomEnemyGoat");
                 break;
 
+            case RoomTypes.Cheese_Room:
+                SceneManager.LoadScene("RoomCheese");
+                break;
+
             case RoomTypes.Turret_Room:
                 SceneManager.LoadScene("RoomEnemyTurret");
+                break;
+
+            case RoomTypes.Dragon_Room:
+                SceneManager.LoadScene("Bossroom");
                 break;
 
             case RoomTypes.Ranged_Attack_Upgrade_Room:
                 SceneManager.LoadScene("RoomUpgradeRangedAttack");
                 break;
 
-            // TODO: Missing rooms here (such as dragon room, other enemy rooms, more specific types of npc rooms, etc)
             default:
                 SceneManager.LoadScene("Room");
                 break;
         }
 
-        Debug.Log("Test" + roomTypes[currentRow, currentCol]);
+        Debug.Log("Moved to room type: " + roomTypes[currentRow, currentCol]);
     }
 
     // Generates the map grid using a recursive dfs approach
     public void GenerateGrid()
     {
+        roomTypeCount.Clear();
+        reserved = new bool[4, 4];
         var visited = new bool[ROWS, COLS];
         var stack = new Stack<(int r, int c)>();
 
         stack.Push((0, 0));
         visited[0, 0] = true;
 
-        // Create a random number generator to randomly assign the other rooms later in the method
+        // Set the room types of the start and final boss room, as they are fixed in place
+        roomTypes[0, 0] = RoomTypes.Dragon_Room;
+        roomTypes[3, 3] = RoomTypes.Start_Room;
+
+        // Also hardcode the upgrade ranged attack room
+        roomTypes[0, 3] = RoomTypes.Ranged_Attack_Upgrade_Room;
+
+        reserved[0, 0] = true;
+        reserved[3, 3] = true;
+        reserved[0, 3] = true;
+
+        // Place goat and cheese rooms in guaranteed positions
+        PlaceGuaranteedRooms();
+
+        // Create a random number generator to randomly assign the other rooms
         System.Random roomRandomNumber = new System.Random();
 
         while (stack.Count > 0)
         {
             var (r, c) = stack.Peek();
 
-             // Assign the room to either be npc or enemy
+            // Assign the room to either be npc or enemy
             AssignRoomType(roomRandomNumber, r, c);
 
             var neighbors = GetUnvisitedNeighbors(r, c, visited);
@@ -141,20 +183,13 @@ public class GridManager : MonoBehaviour
             int dirIndex = neighbors[Random.Range(0, neighbors.Count)];
             OpenPassage(r, c, dirIndex, visited, stack);
 
-            // 50% chance to carve a second passage for more open layouts
+            // 20% chance to carve a second passage for more open layouts
             // Disabled for the boss room to keep it more isolated
             if (r == 0 && c == 0) continue;
             neighbors = GetUnvisitedNeighbors(r, c, visited);
-            if (neighbors.Count > 0 && Random.value < 0.5f)
+            if (neighbors.Count > 0 && Random.value < 0.2f)
                 OpenPassage(r, c, neighbors[Random.Range(0, neighbors.Count)], visited, stack);
         }
-
-        // Set the room types of the start and final boss room, as they are fixed in place
-        roomTypes[0, 0] = RoomTypes.Dragon_Room;
-        roomTypes[3, 3] = RoomTypes.Start_Room;
-
-        // Also hardcode the upgrade ranged attack room
-        roomTypes[0, 3] = RoomTypes.Ranged_Attack_Upgrade_Room;
     }
 
     // Returns a list of direction indices leading to unvisited in-bounds neighbors
@@ -173,14 +208,91 @@ public class GridManager : MonoBehaviour
 
     private void AssignRoomType(System.Random roomRandomNumber, int r, int c)
     {
-        // Decide on the type of the room 
-        int roomType = roomRandomNumber.Next(3, 7);
+        // Skip reserved cells (boss room, start room, special rooms)
+        if (reserved[r, c])
+            return;
 
-        // Assign the type
-        roomTypes[r, c] = (RoomTypes)roomType;
+        // BUG FIX: The original code had two `safety++` increments per iteration,
+        // meaning the loop counter doubled each check. It also never broke out
+        // on a successful find — the `break` was only on the safety limit.
+        // Fixed: single counter, break immediately when a valid type is found.
+
+        RoomTypes type = RoomTypes.NPC_Room; // fallback default
+        bool found = false;
+
+        for (int safety = 0; safety < 100; safety++)
+        {
+            int roomType = roomRandomNumber.Next(3, 6);
+            type = (RoomTypes)roomType;
+
+            if (CanUseType(type))
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            // If we exhausted attempts, try to find any available type
+            foreach (RoomTypes t in System.Enum.GetValues(typeof(RoomTypes)))
+            {
+                if (t == RoomTypes.Start_Room || t == RoomTypes.Dragon_Room ||
+                    t == RoomTypes.Ranged_Attack_Upgrade_Room || t == RoomTypes.Goat_Room ||
+                    t == RoomTypes.Cheese_Room)
+                    continue;
+
+                if (CanUseType(t))
+                {
+                    type = t;
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found)
+            Debug.LogWarning($"Could not assign a room type to [{r},{c}] — all types at max count.");
+
+        roomTypes[r, c] = type;
+        RegisterType(type);
     }
 
-    // Helper method that opens the wall between current cell and its neighbor in designated direction
+    // Placement of goat and cheese rooms guaranteed once each
+    private void PlaceGuaranteedRooms()
+    {
+        PlaceSpecial(RoomTypes.Goat_Room);
+        PlaceSpecial(RoomTypes.Cheese_Room);
+    }
+
+    private void PlaceSpecial(RoomTypes type)
+    {
+        List<(int r, int c)> valid = new List<(int, int)>();
+
+        for (int row = 1; row < ROWS; row++)
+        {
+            for (int col = 1; col < COLS; col++)
+            {
+                if (reserved[row, col]) continue;
+                valid.Add((row, col));
+            }
+        }
+
+        if (valid.Count == 0)
+        {
+            Debug.LogError("No valid cell for: " + type);
+            return;
+        }
+
+        var (r, c) = valid[Random.Range(0, valid.Count)];
+
+        roomTypes[r, c] = type;
+        reserved[r, c] = true;
+
+        RegisterType(type);
+    }
+
+    // Helper method that opens the wall between current cell and its neighbor in the designated direction
     void OpenPassage(int r, int c, int dirIndex, bool[,] visited, Stack<(int, int)> stack)
     {
         var (dr, dc, my, nb) = DIRECTIONS[dirIndex];
@@ -202,4 +314,5 @@ public enum RoomTypes
     Chasing_Enemy_Room,
     Goat_Room,
     Turret_Room,
+    Cheese_Room
 }

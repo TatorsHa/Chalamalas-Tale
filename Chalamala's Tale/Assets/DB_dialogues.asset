@@ -70,3 +70,6 @@ MonoBehaviour:
   - speaker: Boulder
     text: '  x x NOTHING  x x'
     scene: Cheese
+  - speaker: Boulder
+    text: take this cheese
+    scene: Swiss_cheese
