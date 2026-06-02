@@ -564,7 +564,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88e175d39b4bf9345abaf692a9d504cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyChasing
-  maxHealth: 10
+  maxHealth: 3
   spriteRenderer: {fileID: 304607989}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.1

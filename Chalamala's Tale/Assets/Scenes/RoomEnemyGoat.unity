@@ -628,7 +628,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyGoat
   animator: {fileID: 1810597842}
-  maxHealth: 1
+  maxHealth: 10
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
+  originalColor: {r: 1, g: 1, b: 1, a: 1}
   playerObjectName: Player
   wanderDurationSeconds: 3
   chargeDurationSeconds: 2
@@ -647,7 +650,7 @@ MonoBehaviour:
   impactProjectileSpeed: 7
   impactProjectileLifetimeSeconds: 3.5
   impactProjectileSpawnOffset: 0.15
-  spriteRenderer: {fileID: 0}
+  spriteRenderer: {fileID: 4122211645184294741}
   setColorByPhase: 1
   wanderColor: {r: 1, g: 1, b: 1, a: 1}
   chargeColor: {r: 1, g: 0.85, b: 0.35, a: 1}
@@ -1134,6 +1137,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1810597843}
   m_SourcePrefab: {fileID: 100100000, guid: ef773b0e1c4831e4784323ef17e8f367, type: 3}
+--- !u!212 &4122211645184294741 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 5968777599721593099, guid: ef773b0e1c4831e4784323ef17e8f367, type: 3}
+  m_PrefabInstance: {fileID: 4122211645184294740}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

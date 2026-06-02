@@ -3769,10 +3769,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyChasing
   maxHealth: 0
+  spriteRenderer: {fileID: 0}
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
+  originalColor: {r: 0, g: 0, b: 0, a: 0}
   aggroRangeRadius: 5
   showAggroRange: 1
   speed: 2.5
-  spriteImage: {fileID: 0}
 --- !u!61 &1810597843
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4437,6 +4440,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6303889469613488804, guid: 1dd23bdf539ffa640978f3875fdf6532, type: 3}
+    - {fileID: 2605126311645926793, guid: 1dd23bdf539ffa640978f3875fdf6532, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
