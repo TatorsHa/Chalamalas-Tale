@@ -2012,6 +2012,10 @@ PrefabInstance:
       propertyPath: m_VerticalAlignment
       value: 256
       objectReference: {fileID: 0}
+    - target: {fileID: 4791708668823305694, guid: 1dd23bdf539ffa640978f3875fdf6532, type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5193603708860438194, guid: 1dd23bdf539ffa640978f3875fdf6532, type: 3}
       propertyPath: m_SizeDelta.y
       value: 150
