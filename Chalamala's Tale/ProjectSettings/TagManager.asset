@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - RangedAttackUpgrade
   - Collectible
+  - Cheese
   layers:
   - Default
   - TransparentFX

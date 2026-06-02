@@ -2,12 +2,17 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+
 public class Dialogue : MonoBehaviour
 {
     public TextMeshProUGUI textMeshPro;
     public DialoguesSpeeches database;
+    
 
     public string currentScene;
+
+    // NEW
+    public bool cheese = false;
 
     public float textSpeed;
     private int index;
@@ -39,11 +44,22 @@ public class Dialogue : MonoBehaviour
         index = 0;
         textMeshPro.text = "";
 
-        activeDialogue = database.dialogues.FindAll(d => d.scene == currentScene);
+        // Decide which scene to use
+        string sceneToUse = currentScene;
+
+        // If cheese is true, use SwissCheese ONCE
+        if (GameManager.Instance.goatDead && currentScene == "Cheese")
+        {
+            sceneToUse = "SwissCheese";
+            GameManager.Instance.hasCheese = true;  // can now go and see the easter egg at the village
+            GameManager.Instance.goatDead = false; // only once
+        }
+
+        activeDialogue = database.dialogues.FindAll(d => d.scene == sceneToUse);
 
         if (activeDialogue == null || activeDialogue.Count == 0)
         {
-            Debug.LogWarning("No dialogue found for scene: " + currentScene);
+            Debug.LogWarning("No dialogue found for scene: " + sceneToUse);
             EndDialogue();
             return;
         }
@@ -51,19 +67,21 @@ public class Dialogue : MonoBehaviour
         StartCoroutine(TypeLine());
     }
 
-    void EndDialogue(){
-    index = 0;
-    textMeshPro.text = "";
-
-    transform.parent.gameObject.SetActive(false);
-
-    GameObject player = GameObject.FindWithTag("Player");
-    if (player != null)
+    void EndDialogue()
     {
-        PlayerController pc = player.GetComponent<PlayerController>();
-        if (pc != null)
-            pc.UnfreezePlayerMovement();
-    }}
+        index = 0;
+        textMeshPro.text = "";
+
+        transform.parent.gameObject.SetActive(false);
+
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            PlayerController pc = player.GetComponent<PlayerController>();
+            if (pc != null)
+                pc.UnfreezePlayerMovement();
+        }
+    }
 
     IEnumerator TypeLine()
     {

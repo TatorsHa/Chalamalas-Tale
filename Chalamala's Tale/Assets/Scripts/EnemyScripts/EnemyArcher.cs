@@ -1,10 +1,20 @@
 using UnityEngine;
+using System.Collections; // for damage signal coroutine
 
-public class EnemyArcher : MonoBehaviour
+public class EnemyArcher : MonoBehaviour, IDamageable
 {
     [Header("Health")]
     [SerializeField] private float maxHealth = 3f;
     private float currentHealth;
+
+    // to have a signal of damage taken, the sprite changes color
+    [Header("Damage Flash")]
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Color damageColor = Color.red;
+    [SerializeField] private float flashDuration = 0.1f;
+
+    public Color originalColor;
+    private Coroutine flashCoroutine;
 
     [Header("Targeting")]
     [SerializeField] private string playerObjectName = "Player";
@@ -190,6 +200,11 @@ public class EnemyArcher : MonoBehaviour
         {
             return;
         }
+        // damage signal
+        if (flashCoroutine != null)
+            StopCoroutine(flashCoroutine);
+
+        flashCoroutine = StartCoroutine(DamageFlash());
 
         currentHealth -= damageAmount;
         if (currentHealth <= 0f)
@@ -197,6 +212,15 @@ public class EnemyArcher : MonoBehaviour
             GetComponent<DropTable>()?.SpawnDrops();
             Destroy(gameObject);
         }
+    }
+
+    private IEnumerator DamageFlash()
+    {
+        spriteRenderer.color = damageColor;
+
+        yield return new WaitForSeconds(flashDuration);
+
+        spriteRenderer.color = originalColor;
     }
 
     // Helper method that sets up the aggro range centered on the object (enemy) that this script is attached to.

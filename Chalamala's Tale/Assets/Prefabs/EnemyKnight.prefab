@@ -193,6 +193,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyKnight
   maxHealth: 5
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
+  originalColor: {r: 1, g: 1, b: 1, a: 1}
   playerObjectName: Player
   aggroRangeRadius: 6
   attackRangeRadius: 1.8

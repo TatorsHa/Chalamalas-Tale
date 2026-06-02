@@ -23,5 +23,53 @@ MonoBehaviour:
     text: Thank you for having come to restore the peace in the city
     scene: Tutorial_first_scene
   - speaker: Chalamala
-    text: the dragon was on fire
-    scene: RoomBasicNPC
+    text: The dragon was on fire
+    scene: Room
+  - speaker: Resurrected wizard
+    text: 'What was that? That thing killed me ! '
+    scene: Room
+  - speaker: Chalamala
+    text: "Well... Have you ever heard of stories starting with \"once upon a time...\"
+      ? \nNow it's your time! I am so ready to tell this tale!"
+    scene: Room
+  - speaker: Chalamala
+    text: 'It goes something like this:
+
+      once upon a time Fribourg was collapsing,
+      but
+
+      a powerful wizard arrived from the future'
+    scene: Room
+  - speaker: Chalamala
+    text: He was ready to fight all the evil to save the city and be able to safely
+      go back to his time with the benedictions of the freed citizens
+    scene: Room
+  - speaker: Powerful wizard
+    text: I never made these decisions, what are you talking about?!
+    scene: Room
+  - speaker: Chalamala
+    text: Sometimes fate is stronger than us, I am sure you can make it (or at least,
+      you don't have much choice)
+    scene: Room
+  - speaker: Wizard's mind
+    text: '* Very weird guy, I guess I only have a way to find out if what he sais
+      is true or if he''s completekly crazy*'
+    scene: Room
+  - speaker: Paesant
+    text: Great mage, help me!
+    scene: Villager
+  - speaker: Paesant
+    text: "My farm is ruined, a terrible spell \nfell down on us! "
+    scene: Villager
+  - speaker: Paesant
+    text: That devilish goat came straight from hell and scared all my cows...
+    scene: Villager
+  - speaker: Paesant
+    text: Please, go and fight it! We cannot survive the winter without any Gruyere
+    scene: Villager
+  - speaker: Boulder
+    text: '  x x NOTHING  x x'
+    scene: Cheese
+  - speaker: Boulder
+    text: take this cheese
+    scene: Swiss_cheese
