@@ -123,7 +123,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &6724042598694419774
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,10 +137,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyChasing
   maxHealth: 3
+  spriteRenderer: {fileID: 5968777599721593099}
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
+  originalColor: {r: 1, g: 1, b: 1, a: 1}
   aggroRangeRadius: 5
   showAggroRange: 1
   speed: 2.5
-  spriteImage: {fileID: 0}
 --- !u!61 &2542549076725558783
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -212,11 +215,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyArcher
   maxHealth: 3
+  spriteRenderer: {fileID: 5968777599721593099}
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
+  originalColor: {r: 1, g: 1, b: 1, a: 1}
   playerObjectName: Player
   aggroRangeRadius: 12
   shootingRangeRadius: 12
   retreatTriggerRadius: 5
-  showAggroRange: 1
+  showAggroRange: 0
   approachSpeed: 1.1
   retreatSpeed: 1.2
   projectilePrefab: {fileID: 4007544879303788332, guid: 77673bb050f3df240a30099edf8c55df, type: 3}

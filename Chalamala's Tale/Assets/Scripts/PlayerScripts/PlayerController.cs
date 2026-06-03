@@ -123,12 +123,12 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("MoveX", lastMoveDirection.x);
         animator.SetFloat("MoveY", lastMoveDirection.y);
         animator.SetBool("IsMoving", movement != Vector2.zero);
-        Debug.Log($"MoveX: {movement.x} MoveY: {movement.y}");
+        //Debug.Log($"MoveX: {movement.x} MoveY: {movement.y}");
     }
 
     private void HandleDodgeRoll()
     {
-        if (Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             Debug.Log("Doing a dodge roll!");
             playerState = PlayerState.DodgeRollSliding;

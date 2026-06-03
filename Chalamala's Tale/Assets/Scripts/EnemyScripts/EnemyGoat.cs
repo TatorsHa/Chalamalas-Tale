@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; // for damage signal coroutine
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
@@ -23,6 +24,15 @@ public class EnemyGoat : MonoBehaviour, IDamageable
     [Header("Health")]
     [SerializeField] private float maxHealth = 3f;
     private float currentHealth;
+
+    
+    // to have a signal of damage taken, the sprite changes color
+    [Header("Damage Flash")]
+    [SerializeField] private Color damageColor = Color.red;
+    [SerializeField] private float flashDuration = 0.1f;
+
+    public Color originalColor;
+    private Coroutine flashCoroutine;
 
     [Header("Targeting")]
     [SerializeField] private string playerObjectName = "Player";
@@ -370,13 +380,28 @@ public class EnemyGoat : MonoBehaviour, IDamageable
         {
             return;
         }
+        // damage signal
+        if (flashCoroutine != null)
+            StopCoroutine(flashCoroutine);
+
+        flashCoroutine = StartCoroutine(DamageFlash());
 
         currentHealth -= damageAmount;
         if (currentHealth <= 0f)
         {
             GetComponent<DropTable>()?.SpawnDrops();
             Destroy(gameObject);
+            GameManager.Instance.goatDead = true;
         }
+    }
+
+    private IEnumerator DamageFlash()
+    {
+        spriteRenderer.color = damageColor;
+
+        yield return new WaitForSeconds(flashDuration);
+
+        spriteRenderer.color = originalColor;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

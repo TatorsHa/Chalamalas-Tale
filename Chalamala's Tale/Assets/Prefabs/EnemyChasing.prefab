@@ -135,10 +135,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyChasing
   maxHealth: 10
+  spriteRenderer: {fileID: 5968777599721593099}
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
+  originalColor: {r: 1, g: 1, b: 1, a: 1}
   aggroRangeRadius: 5
   showAggroRange: 1
   speed: 2.5
-  spriteImage: {fileID: 0}
 --- !u!61 &2542549076725558783
 BoxCollider2D:
   m_ObjectHideFlags: 0
